@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>畫作椅 Painting Chair | 藝術、教育與成長的演進</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+    :root {
+      --brand-green: #5b6d5f;
+      --brand-warm: #faf8f5;
+      --text-main: #3a3a3a;
+
+      /* Motion (Apple-like easing) */
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --dur-fast: 180ms;
+      --dur-med: 320ms;
+      --dur-slow: 560ms;
+      --ease-hero: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --dur: 560ms;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: var(--brand-warm);
+      color: var(--text-main);
+      scroll-behavior: smooth;
+    }
+
+    /* 品牌字體設定：Bauhaus 93 */
+    .font-bauhaus {
+      font-family: 'Bauhaus 93', 'Arial Black', sans-serif;
+      font-weight: normal;
+    }
+
+    .section-padding { padding: clamp(72px, 8vw, 120px) clamp(18px, 8%, 88px); }
+    .rounded-custom { border-radius: 32px; }
+    .soft-shadow { box-shadow: 0 20px 40px rgba(0,0,0,0.03); }
+
+    /* 導航列樣式 */
+    nav {
+      backdrop-filter: blur(10px);
+      background: rgba(250, 248, 245, 0.8);
+      transition: all var(--dur-med) var(--ease-out-expo);
+    }
+
+    .nav-link {
+      position: relative;
+      transition: color var(--dur-fast) var(--ease-out);
+      padding-bottom: 4px;
+      display: inline-block;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--brand-green);
+      transition: width var(--dur-med) var(--ease-out);
+    }
+
+    .nav-link.nav-active {
+      color: var(--brand-green) !important;
+      font-weight: 700;
+    }
+
+    .nav-link.nav-active::after {
+      width: 100%;
+    }
+
+    /* 行動版選單（避免收合時仍留下 padding 造成白方塊） */
+    .mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height var(--dur-slow) var(--ease-out-expo);
+      padding: 0; /* 關閉時完全不佔空間 */
+    }
+    .mobile-menu.open {
+      max-height: 420px;
+      padding: 0 5% 16px; /* 開啟時才給左右與底部間距 */
+    }
+
+    /* 圖片容器樣式 */
+    .img-container {
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .img-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .img-placeholder {
+      color: #999;
+      font-size: 0.8rem;
+      text-align: center;
+      padding: 2rem;
+      border: 1px dashed #ccc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: var(--brand-green);
+      color: white;
+      font-size: 10px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    /* 懸停規格層樣式 */
+    .spec-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(4px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 2rem;
+      opacity: 0;
+      transition: opacity var(--dur-med) var(--ease-out);
+      pointer-events: none;
+    }
+
+    @media (hover: hover) {
+      .series-card:hover .spec-overlay {
+        opacity: 1;
+      }
+    }
+
+    /* 行動裝置沒有 hover：改成點擊顯示 */
+    .series-card.show-spec .spec-overlay {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      gap: 12px;
+    }
+
+    .spec-row:last-child { border-bottom: none; }
+
+    .spec-label { font-size: 10px; color: #999; letter-spacing: 1px; white-space: nowrap; }
+    .spec-val { font-size: 13px; color: #555; font-weight: 500; text-align: right; }
+
+    .mode-card {
+      cursor: pointer;
+      transition: all var(--dur-med) var(--ease-out-expo);
+      border: 2px solid transparent;
+      user-select: none;
+    }
+    .mode-card:hover {
+      transform: translateY(-5px);
+      background-color: #fcfcfc;
+    }
+    .mode-card.active {
+      border-color: var(--brand-green);
+      background-color: white;
+      box-shadow: 0 10px 20px rgba(91, 109, 95, 0.1);
+    }
+
+    /* 底部聯繫按鈕優化 */
+    .ig-button {
+      transition: all var(--dur-slow) var(--ease-out-expo);
+      border: 1px solid rgba(91, 109, 95, 0.2);
+    }
+    .ig-button:hover {
+      background-color: var(--brand-green);
+      color: white !important;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(91, 109, 95, 0.15);
+      border-color: var(--brand-green);
+    }
+
+    /* =========================
+       RWD: spacing / typography
+       ========================= */
+    @media (max-width: 1024px) {
+      .section-padding { padding: 72px 6%; }
+      nav { background: rgba(250, 248, 245, 0.92); }
+    }
+
+    @media (max-width: 768px) {
+      .section-padding { padding: 56px 5%; }
+      .rounded-custom { border-radius: 24px; }
+
+      /* Hero：避免被 nav 擋住（配合縮小後的導覽列高度） */
+      #hero { padding-left: 20px !important; padding-right: 20px !important; padding-top: 84px !important; }
+
+      /* 多功能卡片：手機橫向滑動（避免 grid-cols 干擾導致卡片消失） */
+      .mode-strip {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding: 4px 2px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+      .mode-strip > .mode-card {
+        flex: 0 0 auto;
+        min-width: 160px;
+        scroll-snap-align: start;
+      }
+      .mode-strip::-webkit-scrollbar { display: none; }
+
+      /* 手機不要 hover 浮動（避免滑動時抖動） */
+      .mode-card:hover { transform: none; }
+
+      /* 規格提示字 */
+      #series .hint-hover { display: none; }
+
+      /* spec overlay padding tighter */
+      .spec-overlay { padding: 1.25rem; }
+    }
+
+    @media (max-width: 420px) {
+      .section-padding { padding: 52px 18px; }
+    }
+
+    /* Desktop / Tablet：多功能卡片回到網格排版（同一份內容） */
+    @media (min-width: 769px) {
+      .mode-strip {
+        display: grid;
+        gap: 16px;
+        overflow: visible;
+        padding: 0;
+      }
+    }
+    @media (min-width: 769px) and (max-width: 1023px) {
+      .mode-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1024px) {
+      .mode-strip { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    }
+
+    /* ===== Apple-like polish + a touch of playful accents (no content changes) ===== */
+    body{
+      background:
+        radial-gradient(1200px 600px at 50% 0%, rgba(242,208,107,0.18), transparent 60%),
+        radial-gradient(900px 500px at 15% 35%, rgba(139,165,184,0.18), transparent 55%),
+        radial-gradient(900px 500px at 85% 40%, rgba(214,106,122,0.16), transparent 55%),
+        linear-gradient(180deg, #fbfaf8 0%, #f7f4ee 60%, #faf8f5 100%);
+      background-attachment: fixed;
+    }
+
+    .section-padding{
+      padding: clamp(56px, 6vw, 92px) 8%;
+    }
+
+    .soft-shadow{
+      box-shadow:
+        0 18px 38px rgba(0,0,0,0.05),
+        0 2px 10px rgba(0,0,0,0.03);
+    }
+
+    nav{
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+    }
+    nav.nav-scrolled{
+      background: rgba(250, 248, 245, 0.72);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    }
+
+    /* Better rhythm */
+    .prose-tight{
+      max-width: 58ch;
+    }
+
+    /* “Glass” chips */
+    .chip{
+      background: rgba(255,255,255,0.72);
+      border: 1px solid rgba(0,0,0,0.05);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Hero polish */
+    #hero{
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    #hero::before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      background:
+        radial-gradient(900px 380px at 50% 15%, rgba(255,255,255,0.65), transparent 60%),
+        radial-gradient(520px 520px at 18% 30%, rgba(214,106,122,0.10), transparent 60%),
+        radial-gradient(520px 520px at 82% 35%, rgba(139,165,184,0.10), transparent 60%);
+      z-index:-1;
+      pointer-events:none;
+    }
+    .hero-frame{
+      position: relative;
+    }
+    .hero-frame::after{
+      content:"";
+      position:absolute;
+      inset:-12px;
+      border-radius: 44px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.65), rgba(255,255,255,0.18));
+      filter: blur(0px);
+      z-index:-1;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    .img-container img{
+      transition: transform 900ms var(--ease-out-expo);
+      will-change: transform;
+    }
+    .img-container:hover img{
+      transform: scale(1.03);
+    }
+
+    /* Subtle playful dots (very light) */
+    .play-dots{
+      position:absolute;
+      width: 220px;
+      height: 140px;
+      background-image: radial-gradient(rgba(91,109,95,0.16) 1.2px, transparent 1.2px);
+      background-size: 14px 14px;
+      opacity: .35;
+      border-radius: 28px;
+      pointer-events:none;
+    }
+
+    /* Mode strip: mobile horizontal scroll feels “native” */
+    .mode-strip{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    @media (min-width: 768px){
+      .mode-strip{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1024px){
+      .mode-strip{ grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    }
+    @media (max-width: 767px){
+      .mode-strip{
+        display:flex;
+        gap: 14px;
+        overflow-x:auto;
+        padding: 4px 2px 10px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+      .mode-strip::-webkit-scrollbar{ height: 0px; }
+      .mode-card{
+        flex: 0 0 72%;
+        scroll-snap-align: start;
+      }
+    }
+
+    .mode-card{
+      border: 1px solid rgba(0,0,0,0.05);
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(10px);
+    }
+    .mode-card:hover{
+      box-shadow: 0 14px 30px rgba(0,0,0,0.06);
+    }
+
+    /* Reveal animations */
+    .reveal{
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 700ms var(--ease-out), transform 900ms var(--ease-out-expo);
+    }
+    .reveal.is-in{
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Tap hint for spec overlay on mobile */
+    @media (hover: none){
+      .spec-overlay{ transition: opacity var(--dur-fast) var(--ease-out); }
+      .series-card{ -webkit-tap-highlight-color: transparent; }
+      .series-card.show-spec .spec-overlay{
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .series-card.show-spec .img-placeholder{ opacity: 0.25; }
+    }
+
+    .tap-hint{
+      display:none;
+    }
+    @media (hover: none){
+      .tap-hint{
+        display:inline-block;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    }
+
+    /* ===== Apple-like carousel ===== */
+    .hero-carousel { position: relative; }
+    .hero-viewport { overflow: hidden; border-radius: 32px; position: relative; }
+    .hero-track {
+      display: flex;
+      gap: 18px;
+      padding: 18px;
+      transform: translateX(0);
+      transition: transform var(--dur-slow) var(--ease-hero);
+      will-change: transform;
+      scroll-snap-type: x mandatory;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .hero-track::-webkit-scrollbar { display: none; }
+    .hero-slide {
+      flex: 0 0 calc(100% - 36px);
+      scroll-snap-align: center;
+      transform: scale(0.96);
+      opacity: 0.65;
+      transition: transform var(--dur) var(--ease), opacity var(--dur) var(--ease);
+    }
+    .hero-slide.is-active { transform: scale(1); opacity: 1; }
+
+    /* --- 桌機左右切換改白色箭頭、滑入顯示、加陰影 --- */
+    .hero-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      display: grid;
+      place-items: center;
+      color: rgba(255,255,255,0.92);
+      opacity: 0;
+      transition: opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+      z-index: 6;
+      user-select: none;
+      text-shadow: 0 10px 24px rgba(0,0,0,0.28);
+    }
+    .hero-prev { left: 14px; }
+    .hero-next { right: 14px; }
+    .hero-carousel:hover .hero-arrow { opacity: 1; }
+    .hero-arrow:active { transform: translateY(-50%) scale(0.98); }
+    .hero-arrow span { font-size: 34px; line-height: 1; transform: translateY(-1px); }
+
+    .hero-dots { display: flex; justify-content: center; gap: 10px; margin-top: 14px; }
+    .hero-dot {
+      width: 8px; height: 8px; border-radius: 999px;
+      background: rgba(91,109,95,0.25);
+      transition: transform var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+    }
+    .hero-dot.is-active { background: rgba(91,109,95,0.75); transform: scale(1.15); }
+
+    /* Side-peek on desktop */
+    @media (min-width: 768px) {
+      .hero-track { padding: 22px; gap: 22px; overflow-x: auto; overflow-y: hidden; }
+      .hero-slide { flex: 0 0 72%; }
+      .hero-viewport::before,
+      .hero-viewport::after{
+        content:"";
+        position:absolute;
+        top:0; bottom:0;
+        width: 72px;
+        pointer-events:none;
+        z-index: 4;
+      }
+      .hero-viewport::before{
+        left:0;
+        background: linear-gradient(90deg, rgba(250,248,245,1) 0%, rgba(250,248,245,0) 100%);
+      }
+      .hero-viewport::after{
+        right:0;
+        background: linear-gradient(270deg, rgba(250,248,245,1) 0%, rgba(250,248,245,0) 100%);
+      }
+    }
+
+    /* Hide arrows on small screens (swipe first) */
+    @media (max-width: 767px){
+      .hero-arrow{ display:none; }
+      .hero-slide{ flex-basis: calc(100% - 36px); }
+    }
+
+    /* Scroll cue */
+    .scroll-cue{
+      width: 44px; height: 44px;
+      border-radius: 999px;
+      border: 1px solid rgba(91,109,95,0.16);
+      background: rgba(255,255,255,0.7);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.06);
+      display:grid; place-items:center;
+      margin: 18px auto 0;
+      transition: transform var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+      animation: cue 1.9s var(--ease) infinite;
+    }
+    .scroll-cue:hover{ transform: translateY(-2px); background: rgba(255,255,255,0.9); }
+    @keyframes cue{
+      0%,100%{ transform: translateY(0); }
+      50%{ transform: translateY(6px); }
+    }
+
+    @media (max-width: 768px){
+      .scroll-cue{ margin-top: 12px; }
+    }
+
+    /* ===== Mobile mode-strip arrows & fades ===== */
+    .mode-wrap{ position: relative; }
+    .mode-fade{
+      position:absolute; top:0; bottom:0; width:40px; pointer-events:none; z-index:2;
+    }
+    .mode-fade.left{ left:0; background: linear-gradient(90deg, rgba(250,248,245,1) 0%, rgba(250,248,245,0) 100%); }
+    .mode-fade.right{ right:0; background: linear-gradient(270deg, rgba(250,248,245,1) 0%, rgba(250,248,245,0) 100%); }
+    .mode-arrow{
+      position:absolute; top:50%; transform:translateY(-50%);
+      width:40px; height:40px;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      display:none;
+      place-items:center;
+      z-index:4;
+      color: #a3a3a3; /* 質感淺灰色 */
+      font-size: 38px; /* 稍微放大箭頭 */
+      font-weight: 300;
+      transition: opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+    }
+    .mode-arrow span {
+      transform: translateY(-4px); /* 微調垂直置中 */
+    }
+    .mode-arrow:active{ transform:translateY(-50%) scale(0.9); color: rgba(91,109,95,0.8); }
+    .mode-arrow.left{ left: 0px; }
+    .mode-arrow.right{ right: 0px; }
+    .mode-arrow[aria-hidden="true"]{ opacity:0; pointer-events:none; }
+
+    @media (max-width: 767px){
+      .mode-arrow{ display:grid; }
+      .mode-strip{
+        display:flex !important;
+        gap: 12px;
+        overflow-x:auto;
+        scroll-snap-type:x mandatory;
+        -webkit-overflow-scrolling: touch;
+        padding: 6px 10px;
+        scrollbar-width:none;
+      }
+      .mode-strip::-webkit-scrollbar{ display:none; }
+      .mode-card{ scroll-snap-align:start; min-width: 160px; }
+    }
+
+    /* ===== Nav shrink on scroll ===== */
+    nav { padding-top: 14px; padding-bottom: 14px; }
+    nav.nav--scrolled{
+      padding-top: 10px;
+      padding-bottom: 10px;
+      background: rgba(250,248,245,0.88);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+      border-bottom: 1px solid rgba(91,109,95,0.10);
+    }
+
+    /* ===== Typography width (less PPT) ===== */
+    .prose-width{ max-width: 64ch; margin-left:auto; margin-right:auto; }
+
+    /* =========================================================
+       ✅ 最終版：手機 Hero 調小＋右側露邊（Apple peek）
+       - 圖面維持 16:9
+       - 玻璃外框仍滿版
+       - dots：展示=橢圓，未展示=圓點
+       ========================================================= */
+    @media (max-width: 767px){
+      /* 玻璃框滿版 */
+      #hero .hero-frame{
+        width: 100vw;
+        max-width: none;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        /* ⭐ 此處將 mb 改為 36px (原 10px)，拉開與下方標題文字的間距，同時讓圖片整體視角往上提 */
+        margin-bottom: 36px;
+      }
+
+      /* 玻璃外框貼近但不厚重 */
+      #hero .hero-frame::after{
+        inset: -5px;            /* 想更貼：-6；想更鬆：-4 */
+        border-radius: 26px;
+      }
+
+      .hero-viewport{ border-radius: 26px; }
+
+      /* ✅ 右側露邊：兩側留一點空間 + 卡片間距 */
+      .hero-track{
+        padding: 0 14px !important;
+        gap: 12px !important;
+      }
+
+      /* ✅ 卡片寬度小於 100% 才會看到下一張邊 */
+      .hero-slide{
+        flex: 0 0 94% !important;   /* 86%~92%：越大越滿版；越小露邊越多 */
+        transform: none !important;
+        opacity: 1 !important;
+      }
+
+      /* ✅ 16:9 + 限高，避免覺得過大 */
+      .hero-slide .img-container{
+        aspect-ratio: 16 / 9;
+        border-radius: 26px;
+        max-height: 46vh;           /* 想更小：42vh；想更大：50vh */
+      }
+
+      .hero-slide .img-container img{ object-fit: cover; }
+
+      .hero-dots{ margin-top: 12px; }
+    }
+
+    /* Apple-like dots：active pill / inactive circle */
+    .hero-dots{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .hero-dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(91,109,95,0.28);
+      transition: width var(--dur-fast) var(--ease),
+                  background var(--dur-fast) var(--ease);
+      transform: none !important;
+    }
+    .hero-dot.is-active{
+      width: 26px;
+      background: rgba(91,109,95,0.78);
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="fixed top-0 w-full z-50">
+    <div class="flex justify-between items-center px-[8%]">
+      <div class="font-bauhaus tracking-wide text-3xl text-[#5b6d5f]">Painting Chair</div>
+
+      <div class="space-x-6 lg:space-x-8 text-[12px] tracking-[0.2em] hidden md:flex font-medium text-stone-400">
+        <a href="#hero" class="nav-link">首頁</a>
+        <a href="#about" class="nav-link">設計理念</a>
+        <a href="#usage" class="nav-link">多功模式</a>
+        <a href="#series" class="nav-link">世代與規格</a>
+        <a href="#designers" class="nav-link">團隊與聯繫</a>
+      </div>
+
+      <button id="menuBtn" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/70 soft-shadow" aria-label="Open menu" aria-expanded="false">
+        <svg class="w-5 h-5 text-[#5b6d5f]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div id="mobileMenu" class="mobile-menu md:hidden">
+      <div class="bg-white/80 rounded-2xl soft-shadow px-5 py-4">
+        <div class="grid gap-3 text-[12px] tracking-[0.2em] font-medium text-stone-400">
+          <a href="#hero" class="nav-link">首頁</a>
+          <a href="#about" class="nav-link">設計理念</a>
+          <a href="#usage" class="nav-link">多功模式</a>
+          <a href="#series" class="nav-link">世代與規格</a>
+          <a href="#designers" class="nav-link">團隊與聯繫</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section id="hero" class="scroll-section min-h-screen flex flex-col justify-center items-center text-center px-8 pt-20">
+    <div aria-hidden="true" class="play-dots hidden md:block" style="top:18%; left:10%;"></div>
+    <div aria-hidden="true" class="play-dots hidden md:block" style="bottom:18%; right:10%; width:180px; height:120px;"></div>
+
+    <div class="w-full max-w-5xl mb-10 hero-frame reveal">
+      <div class="hero-carousel" aria-label="主視覺輪播">
+
+        <button class="hero-arrow hero-prev" type="button" aria-label="上一張">
+          <span aria-hidden="true">‹</span>
+        </button>
+
+        <div class="hero-viewport" role="region" aria-roledescription="carousel">
+          <div class="hero-track">
+            <div class="hero-slide" data-index="0">
+              <div class="img-container aspect-[16/9] rounded-custom soft-shadow bg-stone-200">
+                <img src="https://lh3.googleusercontent.com/u/0/d/1AdfgQpGDJX7fDI0YiFpt6LyxmcnRbY-g" alt="畫作椅二代政府展出實景" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
+                  <p>主視覺展示：畫作椅二代於政府單位展出之實景</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-slide is-active" data-index="1">
+              <div class="img-container aspect-[16/9] rounded-custom soft-shadow bg-stone-200">
+                <img src="https://lh3.googleusercontent.com/u/0/d/1AdfgQpGDJX7fDI0YiFpt6LyxmcnRbY-g" alt="畫作椅二代政府展出實景" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
+                  <p>主視覺展示：畫作椅二代於政府單位展出之實景</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-slide" data-index="2">
+              <div class="img-container aspect-[16/9] rounded-custom soft-shadow bg-stone-200">
+                <img src="https://lh3.googleusercontent.com/u/0/d/1AdfgQpGDJX7fDI0YiFpt6LyxmcnRbY-g" alt="畫作椅二代政府展出實景" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
+                  <p>主視覺展示：畫作椅二代於政府單位展出之實景</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="hero-arrow hero-next" type="button" aria-label="下一張">
+          <span aria-hidden="true">›</span>
+        </button>
+
+        <div class="hero-dots" role="tablist" aria-label="輪播頁籤">
+          <button class="hero-dot" type="button" aria-label="第 1 張" data-to="0"></button>
+          <button class="hero-dot is-active" type="button" aria-label="第 2 張" data-to="1"></button>
+          <button class="hero-dot" type="button" aria-label="第 3 張" data-to="2"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="max-w-2xl reveal">
+      <h1 class="text-4xl md:text-5xl font-medium mb-4 tracking-wider text-gray-800">畫作椅</h1>
+      <p class="text-stone-500 font-light leading-loose text-lg prose-tight mx-auto">
+        從蒙德里安的抽象美學出發，將平面轉化為守護兒童成長的立體空間。
+      </p>
+      <div class="mt-10 flex flex-wrap justify-center gap-4 -translate-y-4">
+        <span class="px-6 py-2 chip rounded-full text-[10px] tracking-widest text-stone-400 soft-shadow">🏅 第一代獲當代好設計獎</span>
+        <span class="px-6 py-2 chip rounded-full text-[10px] tracking-widest text-stone-400 soft-shadow">🏛️ 第二代臺中區農業改良場展覽</span>
+      </div>
+
+      <a href="#about" class="scroll-cue" aria-label="往下查看">
+        <svg class="w-5 h-5 text-[#5b6d5f]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 5v12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M7 14l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <section id="about" class="scroll-section section-padding bg-white">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <div class="space-y-8 reveal">
+        <span class="text-[10px] tracking-[0.4em] text-stone-300 font-bold uppercase">Design & Science</span>
+        <h2 class="text-3xl font-medium leading-snug">環境教育，在色彩與幾何間萌芽。</h2>
+        <div class="space-y-4 text-gray-600 leading-relaxed font-light prose-width">
+          <p>
+            齊格 (Zieger, 1999) 研究發現，由大量直線、方塊與矩形組成的形式，能有效激發視覺皮質細胞。畫作椅透過「平面轉立體」的過程，訓練孩童對形狀、色彩與邏輯的認知。
+          </p>
+        </div>
+        <div class="flex gap-4">
+          <div class="w-12 h-12 bg-[#d66a7a] rounded-full"></div>
+          <div class="w-12 h-12 bg-[#8ba5b8] rounded-full"></div>
+          <div class="w-12 h-12 bg-[#f2d06b] rounded-full"></div>
+        </div>
+      </div>
+      <div class="img-container rounded-custom soft-shadow aspect-square bg-stone-100 reveal">
+        <div class="img-placeholder w-full h-full flex flex-col items-center justify-center">
+          <p>展示：畫作與家具的對應關係</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="usage" class="scroll-section section-padding bg-stone-50">
+    <div class="text-center mb-12 reveal">
+      <span class="text-[10px] tracking-[0.4em] text-stone-300 font-bold uppercase">Versatile Design</span>
+      <h2 class="text-3xl font-medium mt-4">因地制宜，隨心而變</h2>
+    </div>
+
+    <div class="max-w-4xl mx-auto mb-12 reveal">
+      <div class="img-container aspect-[16/9] rounded-custom soft-shadow bg-white overflow-hidden border-8 border-white">
+        <div id="mode-img-loader" class="absolute inset-0 flex flex-col items-center justify-center text-stone-300 bg-stone-50">
+          <p class="text-xs tracking-widest">點擊下方卡片預覽功能</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mode-wrap reveal">
+      <span class="mode-fade left" aria-hidden="true"></span>
+      <span class="mode-fade right" aria-hidden="true"></span>
+      <button class="mode-arrow left" type="button" aria-label="向左查看更多"><span aria-hidden="true">‹</span></button>
+      <button class="mode-arrow right" type="button" aria-label="向右查看更多"><span aria-hidden="true">›</span></button>
+
+      <div class="mode-strip">
+        <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow active" onclick="switchMode(this, '藝術畫作')">
+          <div class="text-2xl mb-4">🖼️</div>
+          <h4 class="font-bold mb-2">藝術畫作</h4>
+          <p class="text-[10px] text-stone-400 font-light">裝飾牆面</p>
+        </div>
+        <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" onclick="switchMode(this, '兒童組合椅')">
+          <div class="text-2xl mb-4">🪑</div>
+          <h4 class="font-bold mb-2">兒童組合椅</h4>
+          <p class="text-[10px] text-stone-400 font-light">支撐坐姿</p>
+        </div>
+        <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" onclick="switchMode(this, '置物架')">
+          <div class="text-2xl mb-4">📚</div>
+          <h4 class="font-bold mb-2">置物架</h4>
+          <p class="text-[10px] text-stone-400 font-light">收納繪本</p>
+        </div>
+        <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" onclick="switchMode(this, '邊几/茶几')">
+          <div class="text-2xl mb-4">☕</div>
+          <h4 class="font-bold mb-2">邊几/茶几</h4>
+          <p class="text-[10px] text-stone-400 font-light">點心台</p>
+        </div>
+        <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" onclick="switchMode(this, '玄關桌')">
+          <div class="text-2xl mb-4">💡</div>
+          <h4 class="font-bold mb-2">玄關桌</h4>
+          <p class="text-[10px] text-stone-400 font-light">入門端景</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="series" class="scroll-section bg-white section-padding">
+    <div class="text-center mb-16 reveal">
+      <span class="text-[10px] tracking-[0.4em] text-stone-300 font-bold uppercase">Evolution</span>
+      <h2 class="text-3xl font-medium mt-4 text-gray-800">世代演進與產品規格</h2>
+      <p class="text-xs text-stone-400 mt-2 hint-hover">滑鼠停在圖片上查看詳細規格<span class="tap-hint">（手機可點一下查看）</span></p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 max-w-6xl mx-auto">
+      <div class="series-card group relative reveal bg-[#fafafa] p-8 rounded-custom soft-shadow flex flex-col items-center border-t-4 border-yellow-200 transition-all duration-500 hover:shadow-xl">
+        <div class="badge mb-6">AWARD WINNING</div>
+
+        <div class="relative w-full aspect-square rounded-2xl mb-8 overflow-hidden bg-white img-container">
+          <div class="img-placeholder w-full h-full flex flex-col items-center justify-center">
+            <p>第一代：溫潤淺色 (得獎作)</p>
+          </div>
+          <div class="spec-overlay">
+            <h5 class="text-stone-400 text-[10px] tracking-widest mb-4 border-b pb-2 uppercase">1st Gen Specs</h5>
+            <div class="spec-row"><span class="spec-label">主要材質</span><span class="spec-val">天然色樺木合板</span></div>
+            <div class="spec-row"><span class="spec-label">輔助結構</span><span class="spec-val">鋁合金接件</span></div>
+            <div class="spec-row"><span class="spec-label">作品尺寸</span><span class="spec-val">1300 x 1030 mm</span></div>
+            <div class="spec-row"><span class="spec-label">組裝方式</span><span class="spec-val">傳統榫接結構</span></div>
+          </div>
+        </div>
+
+        <div class="text-center space-y-4">
+          <h3 class="text-xl font-bold text-[#5b6d5f]">1st Gen / 溫潤淺色</h3>
+          <p class="text-sm text-stone-500 leading-relaxed font-medium text-[#5b6d5f]">
+            奶油色系搭配淺色樺木，旨在降低居家壓迫感。憑藉優雅教育美學榮獲 2021 當代好設計獎。
+          </p>
+        </div>
+      </div>
+
+      <div class="series-card group relative reveal bg-[#fafafa] p-8 rounded-custom soft-shadow flex flex-col items-center border-t-4 border-red-400 transition-all duration-500 hover:shadow-xl">
+        <div class="badge mb-6" style="background:#3b628a">EXHIBITION VERSION</div>
+
+        <div class="relative w-full aspect-square rounded-2xl mb-8 overflow-hidden bg-white img-container">
+          <div class="img-placeholder w-full h-full flex flex-col items-center justify-center">
+            <p>第二代：經典深色 (展覽作)</p>
+          </div>
+          <div class="spec-overlay">
+            <h5 class="text-stone-400 text-[10px] tracking-widest mb-4 border-b pb-2 uppercase">2nd Gen Specs</h5>
+            <div class="spec-row"><span class="spec-label">主要材質</span><span class="spec-val">深釉色樺木合板</span></div>
+            <div class="spec-row"><span class="spec-label">輔助結構</span><span class="spec-val">強化鋁合金結構件</span></div>
+            <div class="spec-row"><span class="spec-label">作品尺寸</span><span class="spec-val">1300 x 1030 mm</span></div>
+            <div class="spec-row"><span class="spec-label">組裝方式</span><span class="spec-val">易拆卸優化結構</span></div>
+          </div>
+        </div>
+
+        <div class="text-center space-y-4">
+          <h3 class="text-xl font-bold text-[#3b628a]">2nd Gen / 經典深色</h3>
+          <p class="text-sm text-stone-500 leading-relaxed font-medium text-[#5b6d5f]">
+            回歸蒙德里安純粹色彩對比，提供極佳視覺激發，目前正於臺中區農業改良場展覽空間展出。
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="designers" class="scroll-section">
+    <section class="section-padding pb-10 bg-stone-50">
+      <div class="text-center mb-16">
+        <span class="text-[10px] tracking-[0.4em] text-stone-300 font-bold uppercase">The Designers</span>
+        <h2 class="text-3xl font-medium mt-4 text-gray-800">設計背後的雙手與巧思</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+        <div class="text-center group reveal">
+          <div class="w-40 h-40 mx-auto rounded-full overflow-hidden mb-6 soft-shadow img-container bg-white border-4 border-white transition-transform duration-300 group-hover:scale-105">
+            <div class="img-placeholder w-full h-full flex flex-col items-center justify-center bg-stone-100 rounded-full !border-0 !p-0">
+              <p class="text-[10px] text-stone-400">高子晴</p>
+            </div>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800">高子晴</h3>
+          <p class="text-[10px] tracking-[0.2em] text-[#5b6d5f] mt-1 mb-4">主設計師 / CO-FOUNDER</p>
+          <p class="text-sm text-stone-500 font-light leading-relaxed max-w-xs mx-auto">
+            「我們希望家具不僅是空間的過客，更是陪伴孩子成長、啟發美感的靈魂伴侶。」
+          </p>
+        </div>
+
+        <div class="text-center group reveal">
+          <div class="w-40 h-40 mx-auto rounded-full overflow-hidden mb-6 soft-shadow img-container bg-white border-4 border-white transition-transform duration-300 group-hover:scale-105">
+            <div class="img-placeholder w-full h-full flex flex-col items-center justify-center bg-stone-100 rounded-full !border-0 !p-0">
+              <p class="text-[10px] text-stone-400">劉芃均</p>
+            </div>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800">劉芃均</h3>
+          <p class="text-[10px] tracking-[0.2em] text-[#5b6d5f] mt-1 mb-4">設計顧問 / CO-FOUNDER</p>
+          <p class="text-sm text-stone-500 font-light leading-relaxed max-w-xs mx-auto">
+            「堅持 5R 永續原則與精準的榫接工藝，是我們對地球與下一代最溫柔的承諾。」
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-padding bg-stone-50 text-center -mt-10 reveal">
+      <div class="max-w-xl mx-auto space-y-8">
+        <div class="w-16 h-[1px] bg-stone-200 mx-auto"></div>
+        <h2 class="text-2xl font-medium text-gray-800 tracking-tight">與我們共同創造溫暖空間</h2>
+        <div class="flex flex-col items-center space-y-4">
+          <a href="https://www.instagram.com/painting_chair?igsh=bTU1bDNubXNxd2U3" target="_blank" class="ig-button inline-flex items-center gap-3 px-10 py-4 chip rounded-full text-[#5b6d5f] font-medium tracking-widest text-sm soft-shadow">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            <span>PAINTING_CHAIR</span>
+          </a>
+          <p class="text-[9px] text-stone-300 tracking-[0.4em] uppercase">Follow our journey on Instagram</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="py-16 text-center text-stone-300 text-[9px] tracking-[0.5em] uppercase">
+    © 2026 PAINTING CHAIR.
+  </footer>
+
+  <script>
+    const sections = document.querySelectorAll('.scroll-section');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    function updateNav() {
+      let current = "";
+      const scrollPos = window.pageYOffset + 120;
+
+      sections.forEach((section) => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+          current = section.getAttribute("id");
+        }
+      });
+
+      if ((window.innerHeight + window.pageYOffset) >= document.documentElement.scrollHeight - 50) {
+        current = sections[sections.length - 1].getAttribute("id");
+      }
+
+      navLinks.forEach((link) => {
+        link.classList.remove("nav-active");
+        if (link.getAttribute("href") === `#${current}`) {
+          link.classList.add("nav-active");
+        }
+      });
+    }
+
+    window.addEventListener('scroll', updateNav);
+    window.addEventListener('load', updateNav);
+
+    // Apple-like subtle polish: nav shadow on scroll
+    const navEl = document.querySelector('nav');
+    function updateNavGlass(){
+      if(!navEl) return;
+      if(window.scrollY > 10) navEl.classList.add('nav-scrolled');
+      else navEl.classList.remove('nav-scrolled');
+    }
+    window.addEventListener('scroll', updateNavGlass, {passive:true});
+    window.addEventListener('load', updateNavGlass);
+
+    // Reveal-on-scroll (lightweight, no content change)
+    const revealEls = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          e.target.classList.add('is-in');
+          io.unobserve(e.target);
+        }
+      });
+    }, {threshold: 0.12, rootMargin: "0px 0px -8% 0px"});
+    revealEls.forEach(el=>io.observe(el));
+
+    // Series specs: tap to toggle on mobile devices
+    document.querySelectorAll('.series-card').forEach(card=>{
+      card.addEventListener('click', (ev)=>{
+        if(ev.target.closest('a')) return;
+        card.classList.toggle('show-spec');
+        
+        // 點擊其中一張時，關閉其他張的規格
+        document.querySelectorAll('.series-card').forEach(other=>{
+          if(other!==card) other.classList.remove('show-spec');
+        });
+      });
+    });
+    
+    // 點擊空白處關閉規格
+    document.addEventListener('click', (ev)=>{
+      if(ev.target.closest('.series-card')) return;
+      document.querySelectorAll('.series-card').forEach(c=>c.classList.remove('show-spec'));
+    }, {passive:true});
+
+    function switchMode(element, modeName) {
+      document.querySelectorAll('.mode-card').forEach(card => card.classList.remove('active'));
+      element.classList.add('active');
+
+      const loader = document.getElementById('mode-img-loader');
+      loader.innerHTML = `<p class="text-stone-400 font-medium">展示：畫作椅的【${modeName}】模式</p>`;
+    }
+
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    function closeMenu() {
+      mobileMenu.classList.remove('open');
+      menuBtn.setAttribute('aria-expanded', 'false');
+    }
+    menuBtn?.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    // Close mobile menu on link click
+    document.querySelectorAll('#mobileMenu a').forEach(a => {
+      a.addEventListener('click', () => closeMenu());
+    });
+
+    // Nav shrink (Apple-like)
+    const nav2 = document.querySelector('nav');
+    function updateNavChrome(){
+      if(!nav2) return;
+      nav2.classList.toggle('nav--scrolled', window.scrollY > 10);
+    }
+    window.addEventListener('scroll', updateNavChrome, { passive:true });
+    window.addEventListener('load', updateNavChrome);
+
+    // Hero carousel (swipe + arrows + dots)
+    (function initHeroCarousel(){
+      const carousel = document.querySelector('.hero-carousel');
+      if(!carousel) return;
+
+      const viewport = carousel.querySelector('.hero-viewport');
+      const track = carousel.querySelector('.hero-track');
+      const slides = Array.from(carousel.querySelectorAll('.hero-slide'));
+      const dots = Array.from(carousel.querySelectorAll('.hero-dot'));
+      const prev = carousel.querySelector('.hero-prev');
+      const next = carousel.querySelector('.hero-next');
+
+      if(!viewport || !track || slides.length === 0) return;
+
+      // 預設讓視覺停在中間卡
+      let index = Math.min(1, slides.length - 1);
+
+      const getCenterIndex = () => {
+        const vpRect = viewport.getBoundingClientRect();
+        const vpCenter = vpRect.left + vpRect.width / 2;
+        let best = 0;
+        let bestDist = Infinity;
+        slides.forEach((s, i) => {
+          const r = s.getBoundingClientRect();
+          const c = r.left + r.width / 2;
+          const d = Math.abs(c - vpCenter);
+          if(d < bestDist){ bestDist = d; best = i; }
+        });
+        return best;
+      };
+
+      const setActive = (i) => {
+        index = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, si) => s.classList.toggle('is-active', si === index));
+        dots.forEach((d, di) => d.classList.toggle('is-active', di === index));
+      };
+
+      const goTo = (i, behavior='smooth') => {
+        const target = slides[i];
+        if(!target) return;
+        const left = target.offsetLeft - (viewport.clientWidth - target.clientWidth) / 2;
+        track.scrollTo({ left, behavior });
+        setActive(i);
+      };
+
+      // Buttons
+      prev?.addEventListener('click', () => goTo(Math.max(0, index - 1)));
+      next?.addEventListener('click', () => goTo(Math.min(slides.length - 1, index + 1)));
+
+      // Dots
+      dots.forEach(d => {
+        d.addEventListener('click', () => {
+          const to = Number(d.dataset.to || 0);
+          goTo(to);
+        });
+      });
+
+      // Update active on swipe/trackpad
+      let raf = null;
+      track.addEventListener('scroll', () => {
+        if(raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          const ci = getCenterIndex();
+          if(ci !== index) setActive(ci);
+        });
+      }, { passive:true });
+
+      // Init
+      window.addEventListener('load', () => goTo(index, 'auto'));
+      window.addEventListener('resize', () => goTo(index, 'auto'));
+    })();
+
+    // Mobile mode-strip arrows
+    (function initModeStripArrows(){
+      const wrap = document.querySelector('.mode-wrap');
+      if(!wrap) return;
+      const strip = wrap.querySelector('.mode-strip');
+      const leftBtn = wrap.querySelector('.mode-arrow.left');
+      const rightBtn = wrap.querySelector('.mode-arrow.right');
+      if(!strip || !leftBtn || !rightBtn) return;
+
+      const card = strip.querySelector('.mode-card');
+      const step = () => {
+        const r = card?.getBoundingClientRect();
+        const gap = 12;
+        return (r ? r.width : 160) + gap;
+      };
+
+      const sync = () => {
+        const max = strip.scrollWidth - strip.clientWidth;
+        const x = strip.scrollLeft;
+        // 加大容錯值（24px），抵銷手機版 padding 與 snap 造成的初始位移誤差
+        leftBtn.setAttribute('aria-hidden', String(x <= 24));
+        rightBtn.setAttribute('aria-hidden', String(x >= max - 24));
+      };
+
+      leftBtn.addEventListener('click', () => strip.scrollBy({ left: -step(), behavior:'smooth' }));
+      rightBtn.addEventListener('click', () => strip.scrollBy({ left: step(), behavior:'smooth' }));
+
+      strip.addEventListener('scroll', () => requestAnimationFrame(sync), { passive:true });
+      window.addEventListener('resize', sync);
+      window.addEventListener('load', sync);
+      sync();
+    })();
+  </script>
+</body>
+</html>
