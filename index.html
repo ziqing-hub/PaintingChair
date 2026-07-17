@@ -3,7 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!--
+    ═══════════════════════════════════════════════════════════
+    畫作椅 Painting Chair — 單頁產品介紹網站
+    ───────────────────────────────────────────────────────────
+    頁面結構（對應導覽列錨點）：
+      #hero      首頁主視覺（三張輪播 + 標語 + 獎項徽章）
+      #about     設計理念（理論根據 + 核心特色四格）
+      #usage     多功模式（預覽區 + 五張模式卡片）
+      #series    世代與規格（兩代產品卡 + 懸停/點擊規格表）
+      #designers 團隊與聯繫（設計師介紹 + IG 連結）
+    圖片素材：統一放在 images/（清單見 images/README.md）
+    維護說明：見 README.md
+    ═══════════════════════════════════════════════════════════
+  -->
+
   <title>畫作椅 Painting Chair | 藝術、教育與成長的演進</title>
+
+  <!-- SEO -->
+  <meta name="description" content="畫作椅 Painting Chair — 以蒙德里安冷抽象美學為靈感的多功能兒童家具。懸掛時是一幅畫，拆解後是隨孩子成長調整的兒童椅；一幅畫內含兩把椅構件，取下後畫作依然完整。可回收樺木打造，榮獲 2021 當代好設計獎。" />
+  <meta name="author" content="高子晴、劉芃均" />
+
+  <!-- Open Graph（LINE / Facebook 分享預覽） -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="畫作椅 Painting Chair | 藝術、教育與成長的演進" />
+  <meta property="og:description" content="懸掛時是一幅蒙德里安式畫作，拆解後化身隨孩子成長的兒童家具。可回收樺木 × 5R 永續 × 2021 當代好設計獎。" />
+  <meta property="og:url" content="https://ziqing-hub.github.io/PaintingChair/" />
+  <meta property="og:image" content="https://ziqing-hub.github.io/PaintingChair/images/og-cover.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Favicon：蒙德里安風格幾何色塊（inline SVG，不需額外檔案） -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23faf8f5'/%3E%3Crect width='28' height='36' fill='%23d66a7a'/%3E%3Crect x='34' width='30' height='36' fill='%23f2d06b'/%3E%3Crect x='34' y='42' width='30' height='22' fill='%238ba5b8'/%3E%3Crect x='28' width='6' height='64' fill='%232b2b2b'/%3E%3Crect y='36' width='64' height='6' fill='%232b2b2b'/%3E%3C/svg%3E" />
+  <meta name="theme-color" content="#faf8f5" />
+
+  <!-- 字型預連線（加速 Google Fonts 載入） -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
@@ -125,7 +162,10 @@
       margin-bottom: 8px;
     }
 
-    /* 懸停規格層樣式 */
+    /* 懸停規格層樣式
+       溢出保護：規格列較多時可完整捲動。注意不能用 justify-content:center
+       （center + overflow 會讓頂部內容被裁切且捲不到），改用 auto-margin 置中：
+       放得下時等同置中、放不下時自動變頂端對齊可捲動 */
     .spec-overlay {
       position: absolute;
       inset: 0;
@@ -133,16 +173,20 @@
       backdrop-filter: blur(4px);
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       padding: 2rem;
       opacity: 0;
       transition: opacity var(--dur-med) var(--ease-out);
       pointer-events: none;
+      overflow-y: auto;
     }
+    .spec-overlay > :first-child { margin-top: auto; }
+    .spec-overlay > :last-child { margin-bottom: auto; }
 
     @media (hover: hover) {
       .series-card:hover .spec-overlay {
         opacity: 1;
+        pointer-events: auto; /* hover 顯示時允許滾輪捲動規格表 */
       }
     }
 
@@ -155,7 +199,7 @@
     .spec-row {
       display: flex;
       justify-content: space-between;
-      padding: 12px 0;
+      padding: 10px 0;
       border-bottom: 1px solid rgba(0,0,0,0.05);
       gap: 12px;
     }
@@ -255,7 +299,10 @@
       .mode-strip { grid-template-columns: repeat(5, minmax(0, 1fr)); }
     }
 
-    /* ===== Apple-like polish + a touch of playful accents (no content changes) ===== */
+    /* ===== Apple-like polish + a touch of playful accents (no content changes) =====
+       ⚠️ 維護注意：自此往下是後期加上的「視覺打磨層」，會刻意覆蓋前面同名的
+       .section-padding / .soft-shadow / .mode-strip 等規則（CSS 後者優先）。
+       修改視覺時請改「這一層之後」的規則；上面較早的定義保留當作基底。 */
     body{
       background:
         radial-gradient(1200px 600px at 50% 0%, rgba(242,208,107,0.18), transparent 60%),
@@ -278,10 +325,7 @@
     nav{
       border-bottom: 1px solid rgba(0,0,0,0.04);
     }
-    nav.nav-scrolled{
-      background: rgba(250, 248, 245, 0.72);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-    }
+    /* （nav 捲動樣式統一由下方 nav--scrolled 負責，重複的 .nav-scrolled 已移除） */
 
     /* Better rhythm */
     .prose-tight{
@@ -410,6 +454,10 @@
     @media (hover: none){
       .tap-hint{
         display:inline-block;
+      }
+      /* 觸控裝置隱藏「滑鼠懸停」提示，只留點按提示 */
+      .hint-hover{
+        display:none;
       }
     }
 
@@ -698,37 +746,44 @@
     <div aria-hidden="true" class="play-dots hidden md:block" style="bottom:18%; right:10%; width:180px; height:120px;"></div>
 
     <div class="w-full max-w-5xl mb-10 hero-frame reveal">
-      <div class="hero-carousel" aria-label="主視覺輪播">
+      <div class="hero-carousel">
 
         <button class="hero-arrow hero-prev" type="button" aria-label="上一張">
           <span aria-hidden="true">‹</span>
         </button>
 
-        <div class="hero-viewport" role="region" aria-roledescription="carousel">
+        <div class="hero-viewport" role="region" aria-roledescription="carousel" aria-label="主視覺輪播">
           <div class="hero-track">
+            <!-- 輪播第 1 張：圖片放 images/hero-01.jpg 即自動顯示 -->
             <div class="hero-slide" data-index="0">
               <div class="img-container aspect-[16/9] rounded-custom soft-shadow bg-stone-200">
-                <img src="親子互動圖" alt="親子互動圖" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <img src="images/hero-01.jpg" alt="畫作椅情境展示：懸掛於牆面的幾何畫作" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
                 <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
-                  <p>主視覺展示：親子互動圖</p>
+                  <p>主視覺展示：平面畫作情境</p>
                 </div>
               </div>
             </div>
 
+            <!-- 輪播第 2 張（主圖）：本地圖優先，讀不到才退回 Google Drive 連結
+                 ⚠️ 該 Drive 檔未開公開分享，訪客實際看不到 → 請盡快將原圖放入 images/hero-02-family.jpg -->
             <div class="hero-slide is-active" data-index="1">
               <div class="img-container aspect-[16/9] rounded-custom soft-shadow bg-stone-200">
-                <img src="https://lh3.googleusercontent.com/d/1mQLPKjWe46NcbnOUaPBjGCqmb31Ns5b5" alt="親子互動圖" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <img src="images/hero-02-family.jpg"
+                     data-fallback="https://lh3.googleusercontent.com/d/1mQLPKjWe46NcbnOUaPBjGCqmb31Ns5b5"
+                     alt="親子互動圖：孩子與畫作椅的日常"
+                     onerror="if(this.dataset.fallback){this.src=this.dataset.fallback;this.removeAttribute('data-fallback');}else{this.style.display='none';this.nextElementSibling.style.display='flex';}">
                 <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
                   <p>主視覺展示：親子互動圖</p>
                 </div>
               </div>
             </div>
 
+            <!-- 輪播第 3 張：圖片放 images/hero-03.jpg 即自動顯示 -->
             <div class="hero-slide" data-index="2">
               <div class="img-container aspect-[16/9] rounded-custom soft-shadow bg-stone-200">
-                <img src="親子互動圖" alt="親子互動圖" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <img src="images/hero-03.jpg" alt="畫作椅情境展示：構件組合而成的兒童椅" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
                 <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
-                  <p>主視覺展示：親子互動圖</p>
+                  <p>主視覺展示：立體組合情境</p>
                 </div>
               </div>
             </div>
@@ -739,10 +794,10 @@
           <span aria-hidden="true">›</span>
         </button>
 
-        <div class="hero-dots" role="tablist" aria-label="輪播頁籤">
-          <button class="hero-dot" type="button" aria-label="第 1 張" data-to="0"></button>
-          <button class="hero-dot is-active" type="button" aria-label="第 2 張" data-to="1"></button>
-          <button class="hero-dot" type="button" aria-label="第 3 張" data-to="2"></button>
+        <div class="hero-dots" role="group" aria-label="輪播頁籤">
+          <button class="hero-dot" type="button" aria-label="第 1 張" aria-current="false" data-to="0"></button>
+          <button class="hero-dot is-active" type="button" aria-label="第 2 張" aria-current="true" data-to="1"></button>
+          <button class="hero-dot" type="button" aria-label="第 3 張" aria-current="false" data-to="2"></button>
         </div>
       </div>
     </div>
@@ -750,11 +805,13 @@
     <div class="max-w-2xl reveal">
       <h1 class="text-4xl md:text-5xl font-medium mb-4 tracking-wider text-gray-800">畫作椅</h1>
       <p class="text-stone-500 font-light leading-loose text-lg prose-tight mx-auto">
-        從蒙德里安的抽象美學出發，將平面轉化為守護兒童成長的立體空間。
+        懸掛時，是一幅蒙德里安式的幾何畫作；拆解後，化身隨孩子成長調整的兒童家具。
+        平面與立體之間，讓藝術走進日常。
       </p>
       <div class="mt-10 flex flex-wrap justify-center gap-4 -translate-y-4">
         <span class="px-6 py-2 chip rounded-full text-[10px] tracking-widest text-stone-400 soft-shadow">🏅 第一代獲當代好設計獎</span>
         <span class="px-6 py-2 chip rounded-full text-[10px] tracking-widest text-stone-400 soft-shadow">🏛️ 第二代臺中區農業改良場展覽</span>
+        <span class="px-6 py-2 chip rounded-full text-[10px] tracking-widest text-stone-400 soft-shadow">♻️ 可回收樺木 × 5R 永續</span>
       </div>
 
       <a href="#about" class="scroll-cue" aria-label="往下查看">
@@ -773,9 +830,37 @@
         <h2 class="text-3xl font-medium leading-snug">環境教育，在色彩與幾何間萌芽。</h2>
         <div class="space-y-4 text-gray-600 leading-relaxed font-light prose-width">
           <p>
-            齊格 (Zieger, 1999) 研究發現，由大量直線、方塊與矩形組成的形式，能有效激發視覺皮質細胞。畫作椅透過「平面轉立體」的過程，訓練孩童對形狀、色彩與邏輯的認知。
+            環境教育對兒童的潛移默化影響深遠。齊格 (Zieger, 1999) 研究發現，由大量直線、方塊與矩形組成的形式，能有效激發視覺皮質細胞，提升孩童的專注力與創意力。
+          </p>
+          <p>
+            畫作椅將蒙德里安冷抽象畫作的幾何構圖與色彩配置，從平面轉化為立體——採用可回收再利用的樺木板材，質輕而耐用。懸掛於空間中，它是一幅畫；需要使用時，從畫中分解出構件，以顏色與幾何形體組合成一把兒童椅，讓孩子在動手的過程中，建立對形狀、色彩與邏輯的認知。
           </p>
         </div>
+
+        <!-- 核心特色四格 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="chip rounded-2xl p-5 soft-shadow">
+            <div class="text-xl mb-2">🖼️🪑</div>
+            <h4 class="font-bold text-sm mb-1 text-[#5b6d5f]">一畫兩椅</h4>
+            <p class="text-xs text-stone-400 font-light leading-relaxed">一幅畫（1300×1030 mm）內含 2 把兒童椅的完整構件</p>
+          </div>
+          <div class="chip rounded-2xl p-5 soft-shadow">
+            <div class="text-xl mb-2">✨</div>
+            <h4 class="font-bold text-sm mb-1 text-[#5b6d5f]">畫作恆完整</h4>
+            <p class="text-xs text-stone-400 font-light leading-relaxed">取下椅子構件後，原本的畫作依舊完整存在</p>
+          </div>
+          <div class="chip rounded-2xl p-5 soft-shadow">
+            <div class="text-xl mb-2">📏</div>
+            <h4 class="font-bold text-sm mb-1 text-[#5b6d5f]">隨成長調整</h4>
+            <p class="text-xs text-stone-400 font-light leading-relaxed">椅子高度與座位可隨兒童成長彈性調整</p>
+          </div>
+          <div class="chip rounded-2xl p-5 soft-shadow">
+            <div class="text-xl mb-2">🔧</div>
+            <h4 class="font-bold text-sm mb-1 text-[#5b6d5f]">模組化設計</h4>
+            <p class="text-xs text-stone-400 font-light leading-relaxed">任何構件皆可輕易拆卸、組裝與替換</p>
+          </div>
+        </div>
+
         <div class="flex gap-4">
           <div class="w-12 h-12 bg-[#d66a7a] rounded-full"></div>
           <div class="w-12 h-12 bg-[#8ba5b8] rounded-full"></div>
@@ -783,7 +868,9 @@
         </div>
       </div>
       <div class="img-container rounded-custom soft-shadow aspect-square bg-stone-100 reveal">
-        <div class="img-placeholder w-full h-full flex flex-col items-center justify-center">
+        <!-- 圖片放 images/about-painting-to-chair.jpg 即自動顯示 -->
+        <img src="images/about-painting-to-chair.jpg" alt="畫作與家具的對應關係：構件從畫中取下組成椅子" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
           <p>展示：畫作與家具的對應關係</p>
         </div>
       </div>
@@ -794,6 +881,9 @@
     <div class="text-center mb-12 reveal">
       <span class="text-[10px] tracking-[0.4em] text-stone-300 font-bold uppercase">Versatile Design</span>
       <h2 class="text-3xl font-medium mt-4">因地制宜，隨心而變</h2>
+      <p class="text-sm text-stone-400 font-light mt-4 max-w-xl mx-auto leading-relaxed">
+        同一幅畫的構件，平面與立體可自由切換——取下椅子後，畫作依然完整。
+      </p>
     </div>
 
     <div class="max-w-4xl mx-auto mb-12 reveal">
@@ -810,28 +900,29 @@
       <button class="mode-arrow left" type="button" aria-label="向左查看更多"><span aria-hidden="true">‹</span></button>
       <button class="mode-arrow right" type="button" aria-label="向右查看更多"><span aria-hidden="true">›</span></button>
 
+      <!-- 五種模式卡片：第二參數對應 images/mode-<key>.jpg 圖檔 -->
       <div class="mode-strip">
-        <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow active" onclick="switchMode(this, '藝術畫作')">
+        <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow active" role="button" tabindex="0" aria-pressed="true" onclick="switchMode(this, 'art', '藝術畫作')">
           <div class="text-2xl mb-4">🖼️</div>
           <h4 class="font-bold mb-2">藝術畫作</h4>
-          <p class="text-[10px] text-stone-400 font-light">裝飾牆面</p>
+          <p class="text-[10px] text-stone-400 font-light">懸掛牆面的幾何構圖</p>
         </div>
-        <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" onclick="switchMode(this, '兒童組合椅')">
+        <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" role="button" tabindex="0" aria-pressed="false" onclick="switchMode(this, 'chair', '兒童組合椅')">
           <div class="text-2xl mb-4">🪑</div>
           <h4 class="font-bold mb-2">兒童組合椅</h4>
-          <p class="text-[10px] text-stone-400 font-light">支撐坐姿</p>
+          <p class="text-[10px] text-stone-400 font-light">高度隨成長調整</p>
         </div>
-        <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" onclick="switchMode(this, '置物架')">
+        <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" role="button" tabindex="0" aria-pressed="false" onclick="switchMode(this, 'shelf', '置物架')">
           <div class="text-2xl mb-4">📚</div>
           <h4 class="font-bold mb-2">置物架</h4>
-          <p class="text-[10px] text-stone-400 font-light">收納繪本</p>
+          <p class="text-[10px] text-stone-400 font-light">收納繪本與玩具</p>
         </div>
-        <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" onclick="switchMode(this, '邊几/茶几')">
+        <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" role="button" tabindex="0" aria-pressed="false" onclick="switchMode(this, 'table', '邊几/茶几')">
           <div class="text-2xl mb-4">☕</div>
           <h4 class="font-bold mb-2">邊几/茶几</h4>
-          <p class="text-[10px] text-stone-400 font-light">點心台</p>
+          <p class="text-[10px] text-stone-400 font-light">客廳點心台</p>
         </div>
-        <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" onclick="switchMode(this, '玄關桌')">
+        <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" role="button" tabindex="0" aria-pressed="false" onclick="switchMode(this, 'console', '玄關桌')">
           <div class="text-2xl mb-4">💡</div>
           <h4 class="font-bold mb-2">玄關桌</h4>
           <p class="text-[10px] text-stone-400 font-light">入門端景</p>
@@ -844,7 +935,11 @@
     <div class="text-center mb-16 reveal">
       <span class="text-[10px] tracking-[0.4em] text-stone-300 font-bold uppercase">Evolution</span>
       <h2 class="text-3xl font-medium mt-4 text-gray-800">世代演進與產品規格</h2>
-      <p class="text-xs text-stone-400 mt-2 hint-hover">滑鼠停在圖片上查看詳細規格<span class="tap-hint">（手機可點一下查看）</span></p>
+      <p class="text-sm text-stone-400 font-light mt-4 max-w-xl mx-auto leading-relaxed">
+        每幅畫（1300×1030 mm）皆內含兩把兒童椅構件，椅面高度可隨孩子成長調整。
+      </p>
+      <!-- 桌機/觸控提示分開兩個 span，避免父層被 RWD 隱藏時把觸控提示一起藏掉 -->
+      <p class="text-xs text-stone-400 mt-2"><span class="hint-hover">滑鼠停在圖片上查看詳細規格</span><span class="tap-hint">點一下圖片可查看詳細規格</span></p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 max-w-6xl mx-auto">
@@ -852,7 +947,9 @@
         <div class="badge mb-6">AWARD WINNING</div>
 
         <div class="relative w-full aspect-square rounded-2xl mb-8 overflow-hidden bg-white img-container">
-          <div class="img-placeholder w-full h-full flex flex-col items-center justify-center">
+          <!-- 圖片放 images/gen1.jpg 即自動顯示 -->
+          <img src="images/gen1.jpg" alt="第一代畫作椅：溫潤淺色（2021 當代好設計獎得獎作）" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+          <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
             <p>第一代：溫潤淺色 (得獎作)</p>
           </div>
           <div class="spec-overlay">
@@ -860,14 +957,17 @@
             <div class="spec-row"><span class="spec-label">主要材質</span><span class="spec-val">天然色樺木合板</span></div>
             <div class="spec-row"><span class="spec-label">輔助結構</span><span class="spec-val">鋁合金接件</span></div>
             <div class="spec-row"><span class="spec-label">作品尺寸</span><span class="spec-val">1300 x 1030 mm</span></div>
+            <div class="spec-row"><span class="spec-label">構件內容</span><span class="spec-val">2 把兒童椅構件</span></div>
             <div class="spec-row"><span class="spec-label">組裝方式</span><span class="spec-val">傳統榫接結構</span></div>
+            <div class="spec-row"><span class="spec-label">適用年齡</span><span class="spec-val" style="color:#c2c2c2">確認後補上</span></div>
+            <div class="spec-row"><span class="spec-label">承重</span><span class="spec-val" style="color:#c2c2c2">量測後補上</span></div>
           </div>
         </div>
 
         <div class="text-center space-y-4">
           <h3 class="text-xl font-bold text-[#5b6d5f]">1st Gen / 溫潤淺色</h3>
           <p class="text-sm text-stone-500 leading-relaxed font-medium text-[#5b6d5f]">
-            奶油色系搭配淺色樺木，旨在降低居家壓迫感。憑藉優雅教育美學榮獲 2021 當代好設計獎。
+            奶油色系搭配淺色樺木，降低居家壓迫感；傳統榫接工藝，體現 5R 永續原則。憑藉優雅教育美學榮獲 2021 當代好設計獎。
           </p>
         </div>
       </div>
@@ -876,7 +976,9 @@
         <div class="badge mb-6" style="background:#3b628a">EXHIBITION VERSION</div>
 
         <div class="relative w-full aspect-square rounded-2xl mb-8 overflow-hidden bg-white img-container">
-          <div class="img-placeholder w-full h-full flex flex-col items-center justify-center">
+          <!-- 圖片放 images/gen2.jpg 即自動顯示 -->
+          <img src="images/gen2.jpg" alt="第二代畫作椅：經典深色（臺中區農業改良場展覽作）" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+          <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
             <p>第二代：經典深色 (展覽作)</p>
           </div>
           <div class="spec-overlay">
@@ -884,14 +986,17 @@
             <div class="spec-row"><span class="spec-label">主要材質</span><span class="spec-val">深釉色樺木合板</span></div>
             <div class="spec-row"><span class="spec-label">輔助結構</span><span class="spec-val">強化鋁合金結構件</span></div>
             <div class="spec-row"><span class="spec-label">作品尺寸</span><span class="spec-val">1300 x 1030 mm</span></div>
+            <div class="spec-row"><span class="spec-label">構件內容</span><span class="spec-val">2 把兒童椅構件</span></div>
             <div class="spec-row"><span class="spec-label">組裝方式</span><span class="spec-val">易拆卸優化結構</span></div>
+            <div class="spec-row"><span class="spec-label">適用年齡</span><span class="spec-val" style="color:#c2c2c2">確認後補上</span></div>
+            <div class="spec-row"><span class="spec-label">承重</span><span class="spec-val" style="color:#c2c2c2">量測後補上</span></div>
           </div>
         </div>
 
         <div class="text-center space-y-4">
           <h3 class="text-xl font-bold text-[#3b628a]">2nd Gen / 經典深色</h3>
           <p class="text-sm text-stone-500 leading-relaxed font-medium text-[#5b6d5f]">
-            回歸蒙德里安純粹色彩對比，提供極佳視覺激發，目前正於臺中區農業改良場展覽空間展出。
+            回歸蒙德里安純粹色彩對比，提供極佳視覺激發；結構優化後，構件更易拆卸、組裝與替換。目前正於臺中區農業改良場展覽空間展出。
           </p>
         </div>
       </div>
@@ -908,7 +1013,9 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
         <div class="text-center group reveal">
           <div class="w-40 h-40 mx-auto rounded-full overflow-hidden mb-6 soft-shadow img-container bg-white border-4 border-white transition-transform duration-300 group-hover:scale-105">
-            <div class="img-placeholder w-full h-full flex flex-col items-center justify-center bg-stone-100 rounded-full !border-0 !p-0">
+            <!-- 頭像放 images/designer-kao.jpg 即自動顯示 -->
+            <img src="images/designer-kao.jpg" alt="主設計師 高子晴" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+            <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center bg-stone-100 rounded-full !border-0 !p-0">
               <p class="text-[10px] text-stone-400">高子晴</p>
             </div>
           </div>
@@ -921,7 +1028,9 @@
 
         <div class="text-center group reveal">
           <div class="w-40 h-40 mx-auto rounded-full overflow-hidden mb-6 soft-shadow img-container bg-white border-4 border-white transition-transform duration-300 group-hover:scale-105">
-            <div class="img-placeholder w-full h-full flex flex-col items-center justify-center bg-stone-100 rounded-full !border-0 !p-0">
+            <!-- 頭像放 images/designer-liu.jpg 即自動顯示 -->
+            <img src="images/designer-liu.jpg" alt="設計顧問 劉芃均" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+            <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center bg-stone-100 rounded-full !border-0 !p-0">
               <p class="text-[10px] text-stone-400">劉芃均</p>
             </div>
           </div>
@@ -984,15 +1093,7 @@
     window.addEventListener('scroll', updateNav);
     window.addEventListener('load', updateNav);
 
-    // Apple-like subtle polish: nav shadow on scroll
-    const navEl = document.querySelector('nav');
-    function updateNavGlass(){
-      if(!navEl) return;
-      if(window.scrollY > 10) navEl.classList.add('nav-scrolled');
-      else navEl.classList.remove('nav-scrolled');
-    }
-    window.addEventListener('scroll', updateNavGlass, {passive:true});
-    window.addEventListener('load', updateNavGlass);
+    // （原 updateNavGlass / .nav-scrolled 與下方 updateNavChrome / .nav--scrolled 重複，已移除合併）
 
     // Reveal-on-scroll (lightweight, no content change)
     const revealEls = document.querySelectorAll('.reveal');
@@ -1025,13 +1126,44 @@
       document.querySelectorAll('.series-card').forEach(c=>c.classList.remove('show-spec'));
     }, {passive:true});
 
-    function switchMode(element, modeName) {
-      document.querySelectorAll('.mode-card').forEach(card => card.classList.remove('active'));
+    /**
+     * 切換多功模式預覽
+     * @param {HTMLElement} element - 被點擊的模式卡片
+     * @param {string} modeKey  - 圖檔鍵值，對應 images/mode-<modeKey>.jpg
+     * @param {string} modeName - 中文模式名稱（圖片缺檔時顯示於佔位文字）
+     */
+    // 請求序號：防止快速連點時「較慢完成的舊圖」回頭覆寫新模式（stale-response 防護）
+    let modeToken = 0;
+
+    function switchMode(element, modeKey, modeName) {
+      document.querySelectorAll('.mode-card').forEach(card => {
+        card.classList.remove('active');
+        card.setAttribute('aria-pressed', 'false');
+      });
       element.classList.add('active');
+      element.setAttribute('aria-pressed', 'true');
 
       const loader = document.getElementById('mode-img-loader');
-      loader.innerHTML = `<p class="text-stone-400 font-medium">展示：畫作椅的【${modeName}】模式</p>`;
+      const token = ++modeToken;
+      const img = new Image();
+      img.src = `images/mode-${modeKey}.jpg`;
+      img.alt = `畫作椅【${modeName}】模式展示`;
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+      // 圖片存在 → 顯示圖片；缺檔 → 顯示佔位文字（不會破圖）
+      // token 不符表示使用者已點了別張卡片，放棄這次結果
+      img.onload = () => { if (token !== modeToken) return; loader.innerHTML = ''; loader.appendChild(img); };
+      img.onerror = () => {
+        if (token !== modeToken) return;
+        loader.innerHTML = `<p class="text-stone-400 font-medium">展示：畫作椅的【${modeName}】模式</p>`;
+      };
     }
+
+    // 模式卡片鍵盤支援（Enter / Space 觸發，配合 role="button" tabindex="0"）
+    document.querySelectorAll('.mode-card').forEach(card => {
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+      });
+    });
 
     // Mobile menu toggle
     const menuBtn = document.getElementById('menuBtn');
@@ -1093,16 +1225,35 @@
       const setActive = (i) => {
         index = Math.max(0, Math.min(slides.length - 1, i));
         slides.forEach((s, si) => s.classList.toggle('is-active', si === index));
-        dots.forEach((d, di) => d.classList.toggle('is-active', di === index));
+        dots.forEach((d, di) => {
+          d.classList.toggle('is-active', di === index);
+          d.setAttribute('aria-current', String(di === index));
+        });
       };
+
+      // 程式化捲動旗標：goTo() 的 smooth 捲動進行中，暫停 scroll 置中同步。
+      // 沒有這個旗標時，動畫初期 getCenterIndex() 仍指向舊卡，會把 index 改回去
+      // → dot 閃爍、快速連點箭頭時第二下被吞掉
+      let isProgrammatic = false;
+      let settleTimer = null;
 
       const goTo = (i, behavior='smooth') => {
         const target = slides[i];
         if(!target) return;
+        isProgrammatic = true;
         const left = target.offsetLeft - (viewport.clientWidth - target.clientWidth) / 2;
         track.scrollTo({ left, behavior });
         setActive(i);
+        // scrollend 不支援的瀏覽器：以計時器後備恢復同步
+        clearTimeout(settleTimer);
+        settleTimer = setTimeout(() => { isProgrammatic = false; }, 700);
       };
+
+      // smooth 捲動結束即恢復 scroll 同步（支援 scrollend 的瀏覽器）
+      track.addEventListener('scrollend', () => {
+        clearTimeout(settleTimer);
+        isProgrammatic = false;
+      }, { passive:true });
 
       // Buttons
       prev?.addEventListener('click', () => goTo(Math.max(0, index - 1)));
@@ -1116,11 +1267,12 @@
         });
       });
 
-      // Update active on swipe/trackpad
+      // Update active on swipe/trackpad（程式化捲動期間跳過，避免競態）
       let raf = null;
       track.addEventListener('scroll', () => {
         if(raf) cancelAnimationFrame(raf);
         raf = requestAnimationFrame(() => {
+          if(isProgrammatic) return;
           const ci = getCenterIndex();
           if(ci !== index) setActive(ci);
         });
@@ -1151,8 +1303,13 @@
         const max = strip.scrollWidth - strip.clientWidth;
         const x = strip.scrollLeft;
         // 加大容錯值（24px），抵銷手機版 padding 與 snap 造成的初始位移誤差
-        leftBtn.setAttribute('aria-hidden', String(x <= 24));
-        rightBtn.setAttribute('aria-hidden', String(x >= max - 24));
+        const hideLeft = x <= 24;
+        const hideRight = x >= max - 24;
+        leftBtn.setAttribute('aria-hidden', String(hideLeft));
+        rightBtn.setAttribute('aria-hidden', String(hideRight));
+        // 同步 disabled：隱形箭頭不該還能被鍵盤 Tab 聚焦（aria-hidden-focus 違規）
+        leftBtn.disabled = hideLeft;
+        rightBtn.disabled = hideRight;
       };
 
       leftBtn.addEventListener('click', () => strip.scrollBy({ left: -step(), behavior:'smooth' }));
