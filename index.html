@@ -484,11 +484,16 @@
     .hero-slide {
       flex: 0 0 calc(100% - 36px);
       scroll-snap-align: center;
-      transform: scale(0.96);
-      opacity: 0.65;
+      transform: scale(0.86);
+      opacity: 0.72;
       transition: transform var(--dur) var(--ease), opacity var(--dur) var(--ease);
     }
     .hero-slide.is-active { transform: scale(1); opacity: 1; }
+    /* 循環輪播歸位的那一瞬間要關掉過場，否則新的當前張會被看見從 0.86 放大到 1 */
+    .hero-track.is-jumping .hero-slide,
+    .hero-track.is-jumping .tone-slider { transition: none !important; }
+    /* 歸位期間也要關掉吸附，否則寫入 scrollLeft 之後會被再吸一次（實測殘留 1px） */
+    .hero-track.is-jumping { scroll-snap-type: none !important; }
 
     /* --- 桌機左右切換改白色箭頭、滑入顯示、加陰影 --- */
     .hero-arrow {
@@ -533,7 +538,7 @@
         content:"";
         position:absolute;
         top:0; bottom:0;
-        width: 72px;
+        width: 36px;
         pointer-events:none;
         z-index: 4;
       }
@@ -703,6 +708,502 @@
       width: 26px;
       background: rgba(91,109,95,0.78);
     }
+
+    /* =========================================================================
+       視覺精緻化覆寫層（2026-08-13）
+
+       刻意寫成「附加在最後的覆寫區塊」而不是去改上面既有的規則：
+       要還原只要刪掉這一整段，原版一行都沒被動過。
+       原則：只改視覺（顏色、字級、間距、邊框），不改任何文字內容與互動行為。
+       ========================================================================= */
+
+    /* ---- ① 墨色：淺灰字系統性過淺 ----------------------------------------
+       實測 Tailwind 的 stone-300 (#d6d3d1) 在本站米白底上只有 1.49:1、
+       stone-400 (#a8a29e) 只有 2.48:1，WCAG AA 要求 4.5:1。
+       兩者的每一處用法都不合格，所以整體加深而不是逐處挑。
+       #6b6560 在米白底上是 5.5:1，仍保有「次要資訊」的輕盈感。          */
+    .text-stone-300, .text-stone-400 { color: #6b6560 !important; }
+
+    /* 拉丁文眉標（DESIGN & SCIENCE / EVOLUTION / THE DESIGNERS 等）
+       改用品牌綠，既解決對比（5.3:1）又讓它成為刻意的視覺記號而不是淡掉的裝飾 */
+    .text-\[10px\].tracking-\[0\.4em\],
+    h5.text-\[10px\].tracking-widest { color: #5b6d5f !important; }
+
+    /* ---- ② 字級：中文一律 ≥12px ------------------------------------------
+       10px 的中文筆畫會糊在一起；9px 的頁尾幾乎不可讀。
+       只調整下限，不改版面結構。                                          */
+    .text-\[9px\]  { font-size: 11px !important; line-height: 1.6 !important; }
+    .text-\[10px\] { font-size: 12px !important; line-height: 1.6 !important; }
+
+    /* ---- ③ 模式列的箭頭 --------------------------------------------------
+       實測白字在米白底上是 1.06:1，等於看不見，所以這裡改成墨色。
+       模式列的背景是白卡片，深色箭頭才讀得到。
+       輪播箭頭已於 2026-08-13 依使用者指定改回「細白箭頭＋暗影」，
+       規則在下方的滑桿區塊之後，不再受這條影響。                        */
+    .mode-arrow, [aria-label*="向左"], [aria-label*="向右"] { color: #3a3a3a !important; }
+    .mode-arrow span, [aria-label*="向左"] span, [aria-label*="向右"] span {
+      color: #3a3a3a !important; font-size: 28px; line-height: 1;
+      text-shadow: 0 1px 2px rgba(250,248,245,.9);
+    }
+
+    /* ---- ④ 真 bug：桌機版遮罩蓋住第五張模式卡 ----------------------------
+       上面第 578 行的註解寫著「Mobile mode-strip arrows & fades」，
+       但規則寫在 media query 外面，所以桌機也生效——
+       實測 1280/1440/1920 都把最後一張卡右緣蓋掉 40px（768 不會）。
+       模式列在桌機不會橫向捲動，本來就不需要箭頭與淡出。                */
+    .mode-fade, .mode-arrow { display: none; }
+    @media (max-width: 768px) {
+      .mode-fade { display: block; }
+      .mode-arrow { display: grid; place-items: center; }
+    }
+
+    /* ---- ⑤ 佔位框：從「工地圍籬」改成品牌化的留白 ------------------------
+       原本是冷灰 #ccc 方角虛線 + #999 文字（2.27:1），
+       撞本站的暖米白基調，而且虛線四角被外層圓角裁斷。
+       改成暖底 + 品牌綠虛線 + 繼承圓角，讓還沒放照片的區塊也像完成品。  */
+    .img-placeholder {
+      color: #6b6560 !important;
+      font-size: 12px !important;
+      letter-spacing: .04em;
+      background: linear-gradient(180deg, #f7f4ef 0%, #f2ede6 100%) !important;
+      border: 1.5px dashed rgba(91,109,95,.42) !important;
+      border-radius: inherit !important;
+      display: grid; place-items: center; gap: .5rem;
+    }
+    /* 中央放一個蒙德里安色塊記號，與 favicon 同語彙 */
+    .img-placeholder::before {
+      content: ""; display: block; width: 46px; height: 34px;
+      background:
+        linear-gradient(#d66a7a, #d66a7a) 0 0 / 55% 60% no-repeat,
+        linear-gradient(#f2d06b, #f2d06b) 100% 0 / 42% 34% no-repeat,
+        linear-gradient(#8ba5b8, #8ba5b8) 100% 100% / 42% 60% no-repeat,
+        #faf8f5;
+      outline: 2px solid #2b2b2b; outline-offset: -1px;
+      opacity: .9;
+    }
+
+    /* ---- ⑥ 規格表的「待補」值 --------------------------------------------
+       文字一字不改（依「內容保留」原則），只改視覺：
+       原本是 #c2c2c2 的隱形灰字（1.78:1），既讀不到又像壞掉；
+       改成明確的「待公開」標籤，讓它看起來是刻意的狀態而不是忘記填。    */
+    .spec-val[style*="c2c2c2"] {
+      color: #6b6560 !important;
+      background: #f2ede6; border: 1px solid rgba(91,109,95,.28);
+      border-radius: 999px; padding: 2px 10px; font-size: 12px;
+      display: inline-block; letter-spacing: .03em;
+    }
+
+    /* ---- ⑦ 頁尾：補上與內容區的分界，避免「露出背景接縫」 --------------- */
+    footer { border-top: 1px solid rgba(91,109,95,.18); }
+
+    /* ---- ⑧ 規格表標籤 ----------------------------------------------------
+       .spec-label 是自訂類別（不是 Tailwind），所以上面針對 stone-* 與
+       text-[10px] 的覆寫抓不到它。實測 #999 在白底上只有 2.85:1、字級 10px，
+       是全站最後一批未達標的文字，而且是「規格」這種需要看清楚的資訊。   */
+    .spec-label {
+      color: #6b6560 !important;
+      font-size: 12px !important;
+      letter-spacing: .02em;
+    }
+
+    /* =========================================================================
+       原色 ↔ 淡色 對照滑桿（2026-08-13）
+       第一眼就同時看到兩代，不必在「首頁放哪一代」之間二選一。
+       原色（第二代）在下層、淡色（第一代）疊在上層並由 --tone 遮罩：
+       把手往右 → 淡色被遮掉 → 看到完整原色。
+       交界不是硬邊，是一條 ±38px 的漸層帶，兩色是「融合」而不是「切斷」。
+       ========================================================================= */
+    /* 宣告成真正的百分比型別，--tone 才能被 transition 平滑補間。
+       不支援 @property 的瀏覽器仍可正常拖動，只是少了開場動畫。 */
+    @property --tone {
+      syntax: '<percentage>';
+      inherits: true;
+      initial-value: 50%;
+    }
+    .hero-viewport { --tone: 50%; }
+    .hero-slide .img-container { position: relative; }
+    .hero-slide .tone-pale {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; z-index: 2;
+      /* 從右側顯示淡色：左邊透明、右邊不透明，中間 76px 漸層過渡 */
+      -webkit-mask-image: linear-gradient(to right,
+        transparent calc(var(--tone) - 38px), #000 calc(var(--tone) + 38px));
+      mask-image: linear-gradient(to right,
+        transparent calc(var(--tone) - 38px), #000 calc(var(--tone) + 38px));
+    }
+    /* 滑桿貼齊自己那張圖片（父層是 .img-container，position:relative）。
+       曾經放在 hero-carousel 層 → inset:0 連縮圖一起蓋住、真實滑鼠點不到；
+       放在 hero-viewport 層 → 露邊版式下把手與遮罩的座標系不同，線和交界會差一個邊距。 */
+    .tone-slider { position: absolute; inset: 0; z-index: 6; pointer-events: none; }
+    /* 該張缺淡色圖時只隱藏它自己的滑桿，其他張照舊 */
+    .tone-slider.is-unavailable { display: none; }
+    /* 只有當前那張顯示把手與標籤，露邊的兩張不要跳出來干擾 */
+    .hero-slide .tone-slider { opacity: 0; transition: opacity .32s var(--ease); }
+    .hero-slide.is-active .tone-slider { opacity: 1; }
+    .tone-range {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      opacity: 0; margin: 0; cursor: ew-resize; pointer-events: auto;
+      -webkit-appearance: none; appearance: none; background: none;
+    }
+    /* 分隔線：仍需要一條線來告訴人「把手在這」，但配合羽化的交界，
+       線本身也做柔化——降不透明度、去掉外框、上下兩端淡出。 */
+    .tone-handle {
+      position: absolute; top: 0; bottom: 0; left: var(--tone);
+      width: 1px; margin-left: -0.5px;
+      background: linear-gradient(to bottom,
+        rgba(255,255,255,0) 0%, rgba(255,255,255,.62) 16%,
+        rgba(255,255,255,.62) 84%, rgba(255,255,255,0) 100%);
+      pointer-events: none;
+    }
+    .tone-handle i {
+      position: absolute; top: 50%; left: 50%; translate: -50% -50%;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: rgba(255,255,255,.96); box-shadow: 0 3px 14px rgba(0,0,0,.22);
+    }
+    /* 把手中央的左右箭頭，用純 CSS 畫，不引入圖片 */
+    .tone-handle i::before, .tone-handle i::after {
+      content: ""; position: absolute; top: 50%; width: 7px; height: 7px;
+      border-top: 2px solid #3a3a3a; border-right: 2px solid #3a3a3a;
+    }
+    .tone-handle i::before { left: 11px; translate: 0 -50%; rotate: -135deg; }
+    .tone-handle i::after  { right: 11px; translate: 0 -50%; rotate: 45deg; }
+    .tone-tag {
+      position: absolute; bottom: 12px; font-size: 11px; font-weight: 700;
+      letter-spacing: .14em; padding: 4px 10px; border-radius: 999px;
+      background: rgba(43,43,43,.72); color: #fff; pointer-events: none;
+    }
+    .tone-tag-l { left: 12px; }
+    .tone-tag-r { right: 12px; }
+    .tone-range:focus-visible ~ .tone-handle i { outline: 2px solid #5b6d5f; outline-offset: 3px; }
+
+    /* 徽章的圖示與文字對齊（文字未刪，只是把 emoji 換成線性 SVG） */
+    .hero-chips .chip { display: inline-flex; align-items: center; gap: .1rem; }
+
+    /* ---- 載入動畫：從全原色滑到 62%，讓人一眼看到「這裡可以拖」 ----
+       只在第一次載入播一次。尊重系統的「減少動態」設定。
+       改成補間 --tone 本身：遮罩與把手吃同一個變數，所以一次搞定、不會脫拍。 */
+    .hero-viewport.tone-animating { transition: --tone 1.15s cubic-bezier(.22,.9,.24,1) }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-viewport.tone-animating { transition: none }
+    }
+
+    /* ---- 左右箭頭：加粗的白色線條、滑鼠靠近才顯現 ----
+       2026-08-13 依使用者指定：不要描邊、不要圓底，改用加粗來取得存在感。
+       所以箭頭改成 SVG 線條（字元 ‹ › 的粗細受字體控制，改不動），
+       stroke-width 2.4 + 圓端，並用一層擴散的柔影（不是框線）避免完全融進背景。 */
+    .hero-arrow {
+      color: #fff !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      text-shadow: none !important;
+    }
+    .hero-arrow svg {
+      width: 34px; height: 34px; display: block;
+      filter: drop-shadow(0 2px 7px rgba(24,20,17,.42)) drop-shadow(0 0 2px rgba(24,20,17,.3));
+    }
+    .hero-carousel:hover .hero-arrow,
+    .hero-arrow:focus-visible { opacity: 1; }
+    .hero-arrow:focus-visible { outline: 2px solid #5b6d5f; outline-offset: 2px; border-radius: 999px; }
+
+    /* =========================================================================
+       多功模式：大型主圖 ＋ 下方按鈕列（2026-08-13）
+       原本是「小預覽區 ＋ 五張厚白卡片（emoji 當圖示）」。
+       升級方向：預覽放大成主角、卡片改成帶縮圖的按鈕列，
+       讓人在點之前就看得出每個模式長什麼樣。onclick 與所有文字未動。
+       ========================================================================= */
+    #usage .max-w-4xl { max-width: 1080px !important; }
+    #usage .img-container.aspect-\[16\/9\] { border-width: 0 !important; box-shadow: 0 18px 48px rgba(43,43,43,.13) !important; }
+    /* 底色只在「還沒點任何卡片」時看得到，滿版圖蓋上去之後就看不到了 */
+    #mode-img-loader { background: linear-gradient(180deg,#f7f4ef,#f2ede6) !important; }
+    #mode-img-loader p { color: #6b6560 !important; font-size: 13px !important; letter-spacing: .12em; }
+
+    .mode-strip { align-items: stretch; }
+    .mode-card {
+      padding: 0 !important; overflow: hidden; border-radius: 14px !important;
+      box-shadow: 0 1px 3px rgba(43,43,43,.08) !important;
+      border: 1.5px solid rgba(43,43,43,.10);
+      transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+    .mode-card:hover { transform: translateY(-2px); border-color: rgba(91,109,95,.45); }
+    .mode-card.active {
+      border-color: #5b6d5f !important;
+      box-shadow: 0 0 0 3px rgba(91,109,95,.15), 0 6px 18px rgba(43,43,43,.12) !important;
+    }
+    /* 縮圖：這裡放的是「產品配白底」的照片，所以要 contain 不能 cover——
+       cover 會把產品的邊緣裁掉，白底商品照最怕這個。
+       白底 + 內距，讓產品四周有呼吸空間，任何比例的照片都能完整顯示。 */
+    /* 3:2 而不是 4:3：4:3 的框有 172px 高，但框裡只有約 94px 是產品，其餘都是白。
+       圖檔也一起改成 3:2 並把產品放大到 88% 寬，所以 contain 不會出現letterbox。 */
+    .mode-thumb { display: block; aspect-ratio: 3/2; background: #fff; overflow: hidden; }
+    .mode-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; padding: 6px; box-sizing: border-box; }
+    /* 沒有 -thumb.jpg 時會退回滿版情境圖，那種圖要 cover 才不會出現黑邊般的留白 */
+    .mode-thumb.is-cover { background: #f2ede6; }
+    .mode-thumb.is-cover img { object-fit: cover; padding: 0; }
+    .mode-thumb.is-empty { background:
+        linear-gradient(#d66a7a,#d66a7a) 20% 26% / 26% 34% no-repeat,
+        linear-gradient(#f2d06b,#f2d06b) 56% 26% / 20% 22% no-repeat,
+        linear-gradient(#8ba5b8,#8ba5b8) 56% 56% / 20% 26% no-repeat,
+        #fff; }
+    .mode-thumb.is-empty img { display: none; }
+    /* 文字區。上下留白收緊：標題上方 11.2→7px、說明下方 12.8→9px */
+    .mode-card h4 { margin: 0 !important; padding: 7px 14px 2px; font-size: 14px; font-weight: 600; }
+    .mode-card p  { margin: 0 !important; padding: 0 14px 9px; }
+    /* 桌機五等分；窄螢幕沿用原本的橫向捲動 */
+    @media (min-width: 769px) {
+      .mode-strip { display: grid !important; grid-template-columns: repeat(5, 1fr); gap: 14px; overflow: visible !important; }
+    }
+
+    /* 徽章的線性圖示 */
+    .chip-ico { width: 15px; height: 15px; color: #5b6d5f; flex: 0 0 auto; margin-right: .1rem; }
+    .hero-chips .chip { gap: .45rem !important; }
+
+    /* =========================================================================
+       依使用者示意圖 1:1 校正主視覺（2026-08-13）
+       比例是從示意圖上量出來的，換算成畫面寬度的百分比：
+         輪播總寬 82.1%／主圖 54.9%／單側露邊 11.7%／張間距 1.9%／露邊縮放 0.92
+       原本用 Tailwind 的 max-w-6xl（固定 1152px），螢幕越寬主視覺佔比就越小，
+       所以改成百分比寬度，才會跟示意圖一樣「隨畫面等比放大」。
+       只改桌機（≥768px）；手機沿用原本的滿版版式。
+       ========================================================================= */
+    @media (min-width: 768px) {
+      /* ① 示意圖沒有外層那個白色玻璃卡框，圖片直接放在頁面背景上 */
+      #hero .hero-frame::after { display: none; }
+      /* 主視覺要以「畫面寬度」為基準，所以桌機把 section 的左右內距歸零；
+         文案區是 max-w-2xl 置中，不靠這個內距。 */
+      #hero { padding-left: 0; padding-right: 0; }
+      #hero .hero-frame {
+        width: 82.1%;
+        max-width: 1680px;        /* 超寬螢幕的上限，避免主視覺大到失控 */
+        margin-left: auto; margin-right: auto;
+      }
+      /* ② 間距 0：示意圖裡張與張的分離感完全來自 0.92 的縮放，不是靠 gap。
+         （反推：0.92 縮放下若真有 20px 的 gap，視覺間隙會變成負數，不成立） */
+      .hero-track { padding: 0; gap: 0; }
+      /* ③ 主圖佔輪播 66.8% → 換算後是畫面的 54.9%。
+         實際張寬由 JS 算成「整數 px」寫進 --slide-w：
+         百分比會得到 790.4 這種小數，而 scrollLeft 只能用整數，
+         循環歸位時位移 N×間距 就會差個 0.5–1px（實測看得到圖跳一下）。 */
+      .hero-slide { flex: 0 0 var(--slide-w, 66.8%); }
+      /* ④ 露邊的高度是主圖的 0.92（示意圖：主圖高 315、露邊高 290） */
+      .hero-slide { transform: scale(0.92); }
+      .hero-slide.is-active { transform: scale(1); }
+      /* ⑤ 箭頭壓在露邊上、靠近輪播邊界（示意圖的箭頭中心距邊界約 17px） */
+      .hero-prev { left: 0; }
+      .hero-next { right: 0; }
+
+      /* ⑥ 露邊要「淡出」，不能有邊線。
+         原本的做法是在兩側疊一層 36px 的紙色漸層，實測不行：
+           · 寬度不夠 —— 露邊可見 165px，等於只蓋住外側五分之一
+           · 顏色對不上 —— 頁面邊緣其實有淡粉色漸層，疊紙色會留下痕跡
+         實測露邊外緣的亮度跳幅是 19–21（淡出的話應該 <8）。
+         改成「遮罩」整個輪播視窗的兩側：內容真正淡到透明、直接透出頁面背景，
+         所以不需要對背景色，任何背景都不會有邊。
+         14% 正好是單側露邊的寬度（165 ÷ 1182），主圖那一段維持全不透明。 */
+      .hero-viewport::before, .hero-viewport::after { display: none; }
+      .hero-viewport {
+        -webkit-mask-image: linear-gradient(to right,
+          transparent 0%, #000 14%, #000 86%, transparent 100%);
+        mask-image: linear-gradient(to right,
+          transparent 0%, #000 14%, #000 86%, transparent 100%);
+      }
+    }
+
+    /* ⑥ 色調分隔線：示意圖是一條清楚、貫穿整張圖的線。
+       先前為了「柔和」把它做成半透明又上下淡出，結果幾乎看不見——
+       柔和該用在兩色的交界（那是遮罩的漸層帶），不是把手本身。 */
+    .tone-handle {
+      width: 2px; margin-left: -1px;
+      background: rgba(255,255,255,.9);
+      box-shadow: 0 0 0 1px rgba(30,26,22,.16);
+    }
+    /* ⑦ 示意圖沒有「02 原色／01 淡色」這兩顆標籤。
+       標籤本身是我加的，不是原有內容；如果之後想要回來，把這行刪掉即可。 */
+    .tone-tag { display: none; }
+
+    /* =========================================================================
+       設計理念（#about）依示意圖校正（2026-08-13）
+       ========================================================================= */
+    /* 兩欄要「齊頂也齊底」——示意圖的右圖上下緣都與左欄對齊。
+       原本用 aspect-square 固定 1:1，但方形圖的高度等於欄寬，
+       所以畫面越寬圖就越長，而左欄文字排完就固定在 577px：
+         實測 1600px 多出 63px、1920px 多出 197px、2560px 多出 466px。
+       改成讓列高由左欄決定、右圖填滿該列（object-fit: cover 已在 .img-container img）。
+       只套 ≥1024px（兩欄成立的斷點）；手機是單欄，height:100% 會塌掉，仍用 aspect-square。 */
+    @media (min-width: 1024px) {
+      /* 超寬螢幕的上限，與首頁主視覺同一個數字。
+         沒有上限時 2560px 會讓兩欄各寬 1043px，右圖被裁成 1.81:1，裁掉太多。 */
+      #about > .grid { align-items: stretch; max-width: 1680px; margin-left: auto; margin-right: auto; }
+      #about .about-media {
+        aspect-ratio: auto;      /* 取消 aspect-square，否則高度會被寬度綁住 */
+        height: 100%;
+        min-height: 0;
+      }
+      /* 關鍵：圖片改絕對定位，才不會用「寬度 × 原始比例」去把列高撐高。
+         只有這樣列高才真的由左欄決定，右圖再填滿該列。 */
+      #about .about-media > img,
+      #about .about-media > .img-placeholder {
+        position: absolute; inset: 0; width: 100%; height: 100%;
+      }
+    }
+
+    /* 四張特色卡。依示意圖：圖示在左、與標題同一行；說明另起一行、從最左邊開始
+       （不是縮排對齊標題）。用 flex-wrap 達成，所以 HTML 不需要多包一層。 */
+    .about-feats .feat {
+      padding: 14px 16px 15px;
+      display: flex; flex-wrap: wrap; align-items: center;
+      column-gap: 9px; row-gap: 6px;
+    }
+    .feat-ico { width: 20px; height: 20px; color: #5b6d5f; flex: 0 0 auto; }
+    .feat-t { font-size: 13.5px; font-weight: 700; color: #5b6d5f; margin: 0; letter-spacing: .02em; }
+    /* 佔滿整列 → 換到第二行，且左緣與圖示對齊 */
+    .feat-d { flex: 0 0 100%; font-size: 12px; line-height: 1.65; color: #6b6560; font-weight: 300; margin: 0; }
+
+    /* 三顆色點的大小。
+       2026-08-13：第一版我從示意圖估成 20px，估過頭了（原本 48px）。
+       改用三個尺度無關的錨點反推示意圖的實際大小：
+         圓點 ÷ 卡片高度 = 0.50 → 0.50 × 77 = 38px
+         圓點 ÷ H2 字級  = 1.5  → 1.5  × 30 = 45px
+         圓點 ÷ 左欄寬   = 0.077→ 0.077× 573 = 44px
+       取平均 42px；間距按示意圖的「間距 ≈ 圓點 0.58 倍」設 24px。
+       要微調就改下面這兩個數字。 */
+    .about-dots { gap: 24px; }
+    .about-dots > div { width: 42px; height: 42px; }
+
+    /* 影片播放層。data-video 留空時 JS 會讓按鈕保持 hidden，
+       所以不會出現一顆點下去沒反應的按鈕（也不會被 Tab 到）。 */
+    .about-media { position: relative; }
+    .media-play {
+      position: absolute; inset: 0; z-index: 3;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: .7rem; background: transparent; border: 0; cursor: pointer;
+      transition: background var(--dur-fast) var(--ease);
+    }
+    .media-play[hidden] { display: none; }
+    /* 有影片但照片還沒放時，佔位框的文字會跟播放鈕的標籤疊在一起（實測撞在同一個中心點）。
+       這種情況下播放鈕就是主角，把佔位文字讓開。 */
+    .about-media.has-video .img-placeholder { display: none !important; }
+    .media-play:hover { background: rgba(20,17,14,.06); }
+    .media-play-ico { width: 62px; height: 62px; display: block; filter: drop-shadow(0 4px 14px rgba(20,17,14,.28)); }
+    .media-play-ico svg { width: 100%; height: 100%; display: block; }
+    .media-play:hover .media-play-ico { transform: scale(1.05); }
+    .media-play-label {
+      font-size: 12.5px; letter-spacing: .12em; color: #fff; font-weight: 500;
+      background: rgba(20,17,14,.52); padding: 5px 13px; border-radius: 999px;
+    }
+    .media-play:focus-visible { outline: 2px solid #5b6d5f; outline-offset: -4px; border-radius: inherit; }
+    /* 播放中：影片鋪滿原本圖片的位置 */
+    .about-media .media-frame {
+      position: absolute; inset: 0; z-index: 4; width: 100%; height: 100%;
+      border: 0; border-radius: inherit; background: #14110e; display: block;
+    }
+
+    /* ───────────────────────────────────────────────
+       兩代規格差異對照表（#series 新增區塊）
+       hover 浮層一次只能看一邊，這張表把兩代並排。
+       規格數值與浮層完全相同，只是換一種呈現方式。
+       ─────────────────────────────────────────────── */
+    /* ── 「查看兩代詳細規格」的收合 ──
+       與上方兩張卡的 hover 浮層資訊重疊，所以平時收起。 */
+    .spec-more { max-width: 820px; margin: 3.5rem auto 0; }
+    .spec-more-btn {
+      display: inline-flex; align-items: center; gap: .45rem;
+      margin: 0 auto; padding: 9px 20px;
+      font-size: 13px; letter-spacing: .06em; color: #5b6d5f; font-weight: 600;
+      background: #fff; border: 1px solid rgba(91,109,95,.28); border-radius: 999px;
+      cursor: pointer; width: max-content;
+      transition: background .2s var(--ease), border-color .2s var(--ease);
+      list-style: none;                 /* 收掉原生三角形 */
+    }
+    .spec-more-btn::-webkit-details-marker { display: none; }
+    .spec-more-btn::marker { content: ''; }
+    .spec-more-btn:hover { background: #f6f8f5; border-color: rgba(91,109,95,.55); }
+    .spec-more-btn:focus-visible { outline: 2px solid #5b6d5f; outline-offset: 3px; }
+    .spec-more-ico { width: 16px; height: 16px; transition: transform .22s var(--ease); }
+    .spec-more[open] .spec-more-ico { transform: rotate(180deg); }
+    /* 文字隨展開狀態切換，兩種說法都寫在 data-* 上，改字不用動 JS */
+    .spec-more-txt::before { content: attr(data-closed); }
+    .spec-more[open] .spec-more-txt::before { content: attr(data-open); }
+    .spec-more-txt { font-size: 0; }            /* 隱藏原本的文字節點，只顯示 ::before */
+    .spec-more-txt::before { font-size: 13px; }
+    /* summary 自己置中 */
+    .spec-more { text-align: center; }
+    .spec-compare { text-align: left; }
+
+    /* 820 而不是 900：兩代的值靠近一點才好比對，太寬眼睛要跑很遠 */
+    .spec-compare { max-width: 820px; margin: 2.25rem auto 0; }
+
+    .cmp-heading { text-align: center; margin-bottom: 2.25rem; }
+    .cmp-eyebrow {
+      font-size: 10px; letter-spacing: .4em; text-transform: uppercase;
+      font-weight: 700; color: #8f8880;
+    }
+    .cmp-h3 { font-size: 1.5rem; font-weight: 500; color: #2f2f2f; margin-top: .6rem; }
+    .cmp-note {
+      font-size: 13.5px; line-height: 1.9; color: #6b6560;
+      max-width: 34rem; margin: .85rem auto 0;
+    }
+    .cmp-note strong { color: #3a3a3a; font-weight: 600; }
+
+    /* 紅線的圖例——沒有說明的話，讀者不知道那道紅線是什麼意思 */
+    .cmp-legend {
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+      margin-top: 1rem; font-size: 12px; color: #6b6560;
+    }
+    .cmp-legend i { width: 3px; height: 15px; background: #d0202f; border-radius: 1px; display: block; }
+
+    .cmp-table {
+      background: #fff; border: 1px solid #ece7e0; border-radius: 18px;
+      overflow: hidden; box-shadow: 0 14px 40px -28px rgba(60, 50, 40, .28);
+    }
+
+    /* 三欄：項目 / 第一代 / 第二代 */
+    .cmp-row {
+      display: grid; grid-template-columns: 8.5rem 1fr 1fr;
+      align-items: center; border-top: 1px solid #f1ece5;
+    }
+    .cmp-row:first-child { border-top: 0; }
+    .cmp-cell { padding: 15px 18px; font-size: 14px; color: #3a3a3a; }
+    .cmp-item {
+      font-size: 12.5px; color: #6b6560; letter-spacing: .04em;
+      background: #fbf9f6; align-self: stretch; display: flex; align-items: center;
+    }
+
+    /* 表頭：世代名稱 + 該世代的三色色票 */
+    .cmp-headrow { background: #fbf9f6; }
+    .cmp-headrow .cmp-item { background: transparent; }
+    .cmp-gen { display: flex; flex-direction: column; gap: 3px; padding-top: 18px; padding-bottom: 18px; }
+    .cmp-gen-no { font-size: 10px; letter-spacing: .22em; color: #8f8880; font-weight: 700; }
+    .cmp-gen-name { font-size: 15px; font-weight: 600; color: #2f2f2f; }
+    .cmp-swatch { display: flex; gap: 3px; margin-top: 5px; }
+    .cmp-swatch i { width: 20px; height: 6px; border-radius: 1px; display: block; }
+
+    /* 有差異的列：左側一道紅線 + 右上角小標 */
+    .cmp-row.is-diff .cmp-item { box-shadow: inset 3px 0 0 #d0202f; }
+    .cmp-row.is-diff .cmp-cell:not(.cmp-item) { font-weight: 600; }
+
+    /* 兩代相同 / 兩代待補的列：數值橫跨兩欄 */
+    .cmp-both { grid-column: 2 / -1; display: flex; align-items: center; gap: .7rem; flex-wrap: wrap; }
+    .cmp-tag {
+      font-size: 10.5px; letter-spacing: .1em; color: #6b6560;
+      background: #f4f1ec; border-radius: 999px; padding: 3px 9px; font-style: normal;
+    }
+    .cmp-pending {
+      font-size: 12.5px; color: #8f8880; font-style: normal;
+      background: #f7f5f1; border: 1px dashed #ddd6cc; border-radius: 999px; padding: 3px 11px;
+    }
+
+    /* 手機：項目名稱自己一列，兩代並排在下 */
+    @media (max-width: 640px) {
+      .cmp-row { grid-template-columns: 1fr 1fr; }
+      .cmp-item { grid-column: 1 / -1; padding: 9px 16px 5px; background: #fbf9f6; }
+      .cmp-cell { padding: 6px 16px 13px; font-size: 13.5px; }
+      /* 項目名稱在手機是整列寬，紅線仍走左側；若改成上緣就變成一條橫貫的粗紅棒，太搶眼 */
+      .cmp-row.is-diff .cmp-item { box-shadow: inset 3px 0 0 #d0202f; }
+      /* 手機只有兩欄，合併格要從第一欄開始，不然左半會空著、數值飄到右邊 */
+      .cmp-both { grid-column: 1 / -1; }
+      .cmp-gen { padding-top: 8px; }
+      .spec-compare { margin-top: 3.5rem; }
+    }
   </style>
 </head>
 <body>
@@ -741,39 +1242,70 @@
     </div>
   </nav>
 
+  <!-- ===================================================================
+       Hero 改為左文右圖的雙欄（2026-08-13 視覺精緻化）
+
+       原則：文案、輪播的三張 slide、三顆徽章、往下箭頭全部原文照搬，
+       輪播的 class（hero-slide / hero-dot / hero-prev / hero-next）與
+       data-to 也一字不動，所以第 1296 行起的輪播 JS 完全不用改。
+       圓點改成 01/02/03 縮圖：仍是 .hero-dot + data-to，只是內容從空的
+       圓點換成縮圖與編號，JS 照樣運作。
+       =================================================================== -->
+  <!-- 主視覺：圖在上、文字置中在下。
+       2026-08-13 依使用者提供的參考圖恢復此排法（中途曾改成左文右圖的雙欄，已還原）。
+       三張輪播、下方圓點、兩側露邊的細白箭頭（滑鼠靠近才顯現）。 -->
   <section id="hero" class="scroll-section min-h-screen flex flex-col justify-center items-center text-center px-8 pt-20">
     <div aria-hidden="true" class="play-dots hidden md:block" style="top:18%; left:10%;"></div>
     <div aria-hidden="true" class="play-dots hidden md:block" style="bottom:18%; right:10%; width:180px; height:120px;"></div>
 
-    <div class="w-full max-w-5xl mb-10 hero-frame reveal">
+    <div class="w-full max-w-6xl mb-10 hero-frame reveal">
       <div class="hero-carousel">
 
         <button class="hero-arrow hero-prev" type="button" aria-label="上一張">
-          <span aria-hidden="true">‹</span>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15.5 4.5 8 12l7.5 7.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
 
         <div class="hero-viewport" role="region" aria-roledescription="carousel" aria-label="主視覺輪播">
           <div class="hero-track">
-            <!-- 輪播第 1 張：圖片放 images/hero-01.jpg 即自動顯示 -->
-            <div class="hero-slide" data-index="0">
+
+            <div class="hero-slide is-active" data-index="0">
               <div class="img-container aspect-[16/9] rounded-custom soft-shadow bg-stone-200">
                 <img src="images/hero-01.jpg" alt="畫作椅情境展示：懸掛於牆面的幾何畫作" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <img class="tone-pale" src="images/hero-01-pale.jpg" alt="" aria-hidden="true" onerror="this.closest('.hero-slide')?.querySelector('.tone-slider')?.classList.add('is-unavailable'); this.remove()">
                 <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
                   <p>主視覺展示：平面畫作情境</p>
+                </div>
+                <!-- 原色↔淡色 對照滑桿。放在圖片容器內，把手與遮罩才共用同一個座標系
+                     （放在外層 viewport 時，露邊版式下兩者會差一個圖片邊距）。
+                     非當前那張會被停用，所以同時只有一個可以拖。 -->
+                <div class="tone-slider" aria-hidden="false">
+                  <input class="tone-range" type="range" min="0" max="100" value="50" step="0.1"
+                         aria-label="第 1 張：拖動比較第二代原色與第一代淡色">
+                  <span class="tone-handle" aria-hidden="true"><i></i></span>
+                  <span class="tone-tag tone-tag-l" aria-hidden="true">02 原色</span>
+                  <span class="tone-tag tone-tag-r" aria-hidden="true">01 淡色</span>
                 </div>
               </div>
             </div>
 
             <!-- 輪播第 2 張（主圖）：本地圖優先，讀不到才退回 Google Drive 連結
                  ⚠️ 該 Drive 檔未開公開分享，訪客實際看不到 → 請盡快將原圖放入 images/hero-02-family.jpg -->
-            <div class="hero-slide is-active" data-index="1">
+            <div class="hero-slide" data-index="1">
               <div class="img-container aspect-[16/9] rounded-custom soft-shadow bg-stone-200">
                 <img src="images/hero-02-family.jpg"
                      data-fallback="https://lh3.googleusercontent.com/d/1mQLPKjWe46NcbnOUaPBjGCqmb31Ns5b5"
                      alt="親子互動圖：孩子與畫作椅的日常"
                      onerror="if(this.dataset.fallback){this.src=this.dataset.fallback;this.removeAttribute('data-fallback');}else{this.style.display='none';this.nextElementSibling.style.display='flex';}">
+                <img class="tone-pale" src="images/hero-02-family-pale.jpg" alt="" aria-hidden="true" onerror="this.closest('.hero-slide')?.querySelector('.tone-slider')?.classList.add('is-unavailable'); this.remove()">
                 <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
                   <p>主視覺展示：親子互動圖</p>
+                </div>
+                <div class="tone-slider" aria-hidden="false">
+                  <input class="tone-range" type="range" min="0" max="100" value="50" step="0.1" disabled
+                         aria-label="第 2 張：拖動比較第二代原色與第一代淡色">
+                  <span class="tone-handle" aria-hidden="true"><i></i></span>
+                  <span class="tone-tag tone-tag-l" aria-hidden="true">02 原色</span>
+                  <span class="tone-tag tone-tag-r" aria-hidden="true">01 淡色</span>
                 </div>
               </div>
             </div>
@@ -782,21 +1314,30 @@
             <div class="hero-slide" data-index="2">
               <div class="img-container aspect-[16/9] rounded-custom soft-shadow bg-stone-200">
                 <img src="images/hero-03.jpg" alt="畫作椅情境展示：構件組合而成的兒童椅" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <img class="tone-pale" src="images/hero-03-pale.jpg" alt="" aria-hidden="true" onerror="this.closest('.hero-slide')?.querySelector('.tone-slider')?.classList.add('is-unavailable'); this.remove()">
                 <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
                   <p>主視覺展示：立體組合情境</p>
                 </div>
+                <div class="tone-slider" aria-hidden="false">
+                  <input class="tone-range" type="range" min="0" max="100" value="50" step="0.1" disabled
+                         aria-label="第 3 張：拖動比較第二代原色與第一代淡色">
+                  <span class="tone-handle" aria-hidden="true"><i></i></span>
+                  <span class="tone-tag tone-tag-l" aria-hidden="true">02 原色</span>
+                  <span class="tone-tag tone-tag-r" aria-hidden="true">01 淡色</span>
+                </div>
               </div>
             </div>
+
           </div>
         </div>
 
         <button class="hero-arrow hero-next" type="button" aria-label="下一張">
-          <span aria-hidden="true">›</span>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8.5 4.5 16 12l-7.5 7.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
 
         <div class="hero-dots" role="group" aria-label="輪播頁籤">
-          <button class="hero-dot" type="button" aria-label="第 1 張" aria-current="false" data-to="0"></button>
-          <button class="hero-dot is-active" type="button" aria-label="第 2 張" aria-current="true" data-to="1"></button>
+          <button class="hero-dot is-active" type="button" aria-label="第 1 張" aria-current="true" data-to="0"></button>
+          <button class="hero-dot" type="button" aria-label="第 2 張" aria-current="false" data-to="1"></button>
           <button class="hero-dot" type="button" aria-label="第 3 張" aria-current="false" data-to="2"></button>
         </div>
       </div>
@@ -808,10 +1349,9 @@
         懸掛時，是一幅蒙德里安式的幾何畫作；拆解後，化身隨孩子成長調整的兒童家具。
         平面與立體之間，讓藝術走進日常。
       </p>
-      <div class="mt-10 flex flex-wrap justify-center gap-4 -translate-y-4">
-        <span class="px-6 py-2 chip rounded-full text-[10px] tracking-widest text-stone-400 soft-shadow">🏅 第一代獲當代好設計獎</span>
-        <span class="px-6 py-2 chip rounded-full text-[10px] tracking-widest text-stone-400 soft-shadow">🏛️ 第二代臺中區農業改良場展覽</span>
-        <span class="px-6 py-2 chip rounded-full text-[10px] tracking-widest text-stone-400 soft-shadow">♻️ 可回收樺木 × 5R 永續</span>
+      <div class="mt-10 flex flex-wrap justify-center gap-4 -translate-y-4 hero-chips">
+        <span class="px-6 py-2 chip rounded-full text-[10px] tracking-widest text-stone-400 soft-shadow"><svg class="chip-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="12.5" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M7 7.5 5.5 2.5h9L13 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg> 第一代獲當代好設計獎</span>
+        <span class="px-6 py-2 chip rounded-full text-[10px] tracking-widest text-stone-400 soft-shadow"><svg class="chip-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M2.5 7.5 10 3l7.5 4.5M4.5 8v7M8 8v7M12 8v7M15.5 8v7M2.5 16.5h15" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> 第二代臺中區農業改良場展覽</span>
       </div>
 
       <a href="#about" class="scroll-cue" aria-label="往下查看">
@@ -837,42 +1377,62 @@
           </p>
         </div>
 
-        <!-- 核心特色四格 -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="chip rounded-2xl p-5 soft-shadow">
-            <div class="text-xl mb-2">🖼️🪑</div>
-            <h4 class="font-bold text-sm mb-1 text-[#5b6d5f]">一畫兩椅</h4>
-            <p class="text-xs text-stone-400 font-light leading-relaxed">一幅畫（1300×1030 mm）內含 2 把兒童椅的完整構件</p>
+        <!-- 核心特色四格。
+             2026-08-13：標題四項維持原本（產品獨有的說法），說明改成短句以達到示意圖的密度。
+             被縮短的具體規格沒有消失，都在「世代與規格」那一區：
+               1300×1030 mm、2 把兒童椅構件 → 該區開頭說明與規格對照表
+               椅面高度可調整               → 該區開頭說明
+               構件可拆卸、組裝與替換        → 第二代的說明段落
+             emoji 換成線性圖示，與 Hero 徽章、多功模式同一套語彙。 -->
+        <div class="about-feats grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="feat chip rounded-2xl soft-shadow">
+            <svg class="feat-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="2.4" y="3" width="15.2" height="9" rx="1.2" stroke="currentColor" stroke-width="1.4"/><path d="M5.4 17v-3.2h3.2V17M11.4 17v-3.2h3.2V17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            <h4 class="feat-t">一畫兩椅</h4>
+            <p class="feat-d">一幅畫內含 2 把兒童椅構件</p>
           </div>
-          <div class="chip rounded-2xl p-5 soft-shadow">
-            <div class="text-xl mb-2">✨</div>
-            <h4 class="font-bold text-sm mb-1 text-[#5b6d5f]">畫作恆完整</h4>
-            <p class="text-xs text-stone-400 font-light leading-relaxed">取下椅子構件後，原本的畫作依舊完整存在</p>
+          <div class="feat chip rounded-2xl soft-shadow">
+            <svg class="feat-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="2.4" y="3.4" width="15.2" height="13.2" rx="1.2" stroke="currentColor" stroke-width="1.4"/><path d="M2.4 9.4h15.2M9.6 3.4v13.2" stroke="currentColor" stroke-width="1.4"/></svg>
+            <h4 class="feat-t">畫作恆完整</h4>
+            <p class="feat-d">取下椅子構件後，畫作依舊完整</p>
           </div>
-          <div class="chip rounded-2xl p-5 soft-shadow">
-            <div class="text-xl mb-2">📏</div>
-            <h4 class="font-bold text-sm mb-1 text-[#5b6d5f]">隨成長調整</h4>
-            <p class="text-xs text-stone-400 font-light leading-relaxed">椅子高度與座位可隨兒童成長彈性調整</p>
+          <div class="feat chip rounded-2xl soft-shadow">
+            <svg class="feat-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 3.2v13.6M6.6 6.6 10 3.2l3.4 3.4M6.6 13.4 10 16.8l3.4-3.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.6 6.6h2.2M2.6 10h2.2M2.6 13.4h2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            <h4 class="feat-t">隨成長調整</h4>
+            <p class="feat-d">椅面高度隨孩子成長調整</p>
           </div>
-          <div class="chip rounded-2xl p-5 soft-shadow">
-            <div class="text-xl mb-2">🔧</div>
-            <h4 class="font-bold text-sm mb-1 text-[#5b6d5f]">模組化設計</h4>
-            <p class="text-xs text-stone-400 font-light leading-relaxed">任何構件皆可輕易拆卸、組裝與替換</p>
+          <div class="feat chip rounded-2xl soft-shadow">
+            <svg class="feat-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="2.4" y="2.4" width="6.6" height="6.6" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="2.4" width="6.6" height="6.6" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="2.4" y="11" width="6.6" height="6.6" rx="1" stroke="currentColor" stroke-width="1.4"/><path d="M11 14.3h6.6M14.3 11v6.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            <h4 class="feat-t">模組化設計</h4>
+            <p class="feat-d">構件可拆卸、組裝與替換</p>
           </div>
         </div>
 
-        <div class="flex gap-4">
-          <div class="w-12 h-12 bg-[#d66a7a] rounded-full"></div>
-          <div class="w-12 h-12 bg-[#8ba5b8] rounded-full"></div>
-          <div class="w-12 h-12 bg-[#f2d06b] rounded-full"></div>
+        <!-- 蒙德里安三色記號。示意圖裡是小圓點，原本 48px 太搶戲 -->
+        <div class="about-dots flex">
+          <div class="bg-[#d66a7a] rounded-full"></div>
+          <div class="bg-[#8ba5b8] rounded-full"></div>
+          <div class="bg-[#f2d06b] rounded-full"></div>
         </div>
       </div>
-      <div class="img-container rounded-custom soft-shadow aspect-square bg-stone-100 reveal">
+
+      <!-- ▼▼▼ 影片連結填在下面這一行的 data-video ▼▼▼
+           YouTube 貼網址列的連結即可（https://www.youtube.com/watch?v=xxxx 或 https://youtu.be/xxxx）；
+           自己的影片檔就放 images/ 裡再寫 images/intro.mp4。
+           留空的話播放鈕會自動隱藏，不會出現一顆點下去沒反應的按鈕。
+           影片長度變了就改下面那句「觀看 90 秒介紹影片」（目前這支實測 1:29）。 -->
+      <div class="img-container rounded-custom soft-shadow aspect-square bg-stone-100 reveal about-media"
+           data-video="https://youtu.be/Ae7Tq3zgTFQ">
         <!-- 圖片放 images/about-painting-to-chair.jpg 即自動顯示 -->
         <img src="images/about-painting-to-chair.jpg" alt="畫作與家具的對應關係：構件從畫中取下組成椅子" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
         <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
           <p>展示：畫作與家具的對應關係</p>
         </div>
+        <button class="media-play" type="button" hidden>
+          <span class="media-play-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="rgba(20,17,14,.42)"/><path d="M9.6 7.8v8.4L16.4 12z" fill="#fff"/></svg>
+          </span>
+          <span class="media-play-label">觀看 90 秒介紹影片</span>
+        </button>
       </div>
     </div>
   </section>
@@ -903,27 +1463,27 @@
       <!-- 五種模式卡片：第二參數對應 images/mode-<key>.jpg 圖檔 -->
       <div class="mode-strip">
         <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow active" role="button" tabindex="0" aria-pressed="true" onclick="switchMode(this, 'art', '藝術畫作')">
-          <div class="text-2xl mb-4">🖼️</div>
+          <span class="mode-thumb" aria-hidden="true"><img src="images/mode-art-thumb.jpg" alt="" loading="lazy" onerror="if(this.dataset.fb){this.closest('.mode-thumb').classList.add('is-empty')}else{this.dataset.fb='1';this.closest('.mode-thumb').classList.add('is-cover');this.src='images/mode-art.jpg'}"></span>
           <h4 class="font-bold mb-2">藝術畫作</h4>
           <p class="text-[10px] text-stone-400 font-light">懸掛牆面的幾何構圖</p>
         </div>
         <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" role="button" tabindex="0" aria-pressed="false" onclick="switchMode(this, 'chair', '兒童組合椅')">
-          <div class="text-2xl mb-4">🪑</div>
+          <span class="mode-thumb" aria-hidden="true"><img src="images/mode-chair-thumb.jpg" alt="" loading="lazy" onerror="if(this.dataset.fb){this.closest('.mode-thumb').classList.add('is-empty')}else{this.dataset.fb='1';this.closest('.mode-thumb').classList.add('is-cover');this.src='images/mode-chair.jpg'}"></span>
           <h4 class="font-bold mb-2">兒童組合椅</h4>
           <p class="text-[10px] text-stone-400 font-light">高度隨成長調整</p>
         </div>
         <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" role="button" tabindex="0" aria-pressed="false" onclick="switchMode(this, 'shelf', '置物架')">
-          <div class="text-2xl mb-4">📚</div>
+          <span class="mode-thumb" aria-hidden="true"><img src="images/mode-shelf-thumb.jpg" alt="" loading="lazy" onerror="if(this.dataset.fb){this.closest('.mode-thumb').classList.add('is-empty')}else{this.dataset.fb='1';this.closest('.mode-thumb').classList.add('is-cover');this.src='images/mode-shelf.jpg'}"></span>
           <h4 class="font-bold mb-2">置物架</h4>
           <p class="text-[10px] text-stone-400 font-light">收納繪本與玩具</p>
         </div>
         <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" role="button" tabindex="0" aria-pressed="false" onclick="switchMode(this, 'table', '邊几/茶几')">
-          <div class="text-2xl mb-4">☕</div>
+          <span class="mode-thumb" aria-hidden="true"><img src="images/mode-table-thumb.jpg" alt="" loading="lazy" onerror="if(this.dataset.fb){this.closest('.mode-thumb').classList.add('is-empty')}else{this.dataset.fb='1';this.closest('.mode-thumb').classList.add('is-cover');this.src='images/mode-table.jpg'}"></span>
           <h4 class="font-bold mb-2">邊几/茶几</h4>
           <p class="text-[10px] text-stone-400 font-light">客廳點心台</p>
         </div>
         <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" role="button" tabindex="0" aria-pressed="false" onclick="switchMode(this, 'console', '玄關桌')">
-          <div class="text-2xl mb-4">💡</div>
+          <span class="mode-thumb" aria-hidden="true"><img src="images/mode-console-thumb.jpg" alt="" loading="lazy" onerror="if(this.dataset.fb){this.closest('.mode-thumb').classList.add('is-empty')}else{this.dataset.fb='1';this.closest('.mode-thumb').classList.add('is-cover');this.src='images/mode-console.jpg'}"></span>
           <h4 class="font-bold mb-2">玄關桌</h4>
           <p class="text-[10px] text-stone-400 font-light">入門端景</p>
         </div>
@@ -1001,6 +1561,86 @@
         </div>
       </div>
     </div>
+
+    <!-- ─── 兩代規格差異對照（預設收起）───
+           2026-08-13：這張表與上方兩張卡的 hover 浮層資訊重疊，
+           所以改成平時收起、點「查看詳細」才展開。
+           用原生 <details>：鍵盤操作、展開狀態的語音報讀都是瀏覽器內建，不需要 JS。
+           規格文字全部沿用浮層裡的原始數值，沒有新增、改寫或刪除任何一項；
+           只把「兩代相同」的項目合併成一格，避免同一句話重複兩次。
+           注意：不能掛 .reveal —— 收起時元素不顯示，IntersectionObserver 不會觸發，
+           展開後會停在 opacity:0 變成空白。 -->
+    <details class="spec-more">
+      <summary class="spec-more-btn">
+        <span class="spec-more-txt" data-open="收起詳細規格" data-closed="查看兩代詳細規格">查看兩代詳細規格</span>
+        <svg class="spec-more-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5.5 8l4.5 4.5L14.5 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </summary>
+      <div class="spec-compare">
+        <div class="cmp-heading">
+          <span class="cmp-eyebrow">Side by Side</span>
+          <h3 class="cmp-h3">兩代規格差異對照</h3>
+          <p class="cmp-note">
+            尺寸與構件數量兩代完全相同，差別在<strong>材質色調、結構件與組裝方式</strong>。
+          </p>
+          <p class="cmp-legend"><i aria-hidden="true"></i>標紅線的項目代表兩代不同</p>
+        </div>
+
+        <div class="cmp-table">
+          <!-- 色票只是示意兩代的色調傾向。實際產品顏色若不同，
+               直接改下面 <i style="background:#xxxxxx"> 的色碼即可，不影響其他地方。 -->
+          <div class="cmp-row cmp-headrow">
+            <span class="cmp-cell cmp-item">項目</span>
+            <span class="cmp-cell cmp-gen">
+              <span class="cmp-gen-no">1ST GEN</span>
+              <span class="cmp-gen-name">溫潤淺色</span>
+              <span class="cmp-swatch" aria-hidden="true"><i style="background:#d66a7a"></i><i style="background:#f2d06b"></i><i style="background:#8ba5b8"></i></span>
+            </span>
+            <span class="cmp-cell cmp-gen">
+              <span class="cmp-gen-no">2ND GEN</span>
+              <span class="cmp-gen-name">經典深色</span>
+              <span class="cmp-swatch" aria-hidden="true"><i style="background:#d0202f"></i><i style="background:#f5c518"></i><i style="background:#0b4fa2"></i></span>
+            </span>
+          </div>
+
+          <!-- 有差異的三項 -->
+          <div class="cmp-row is-diff">
+            <span class="cmp-cell cmp-item">主要材質</span>
+            <span class="cmp-cell">天然色樺木合板</span>
+            <span class="cmp-cell">深釉色樺木合板</span>
+          </div>
+          <div class="cmp-row is-diff">
+            <span class="cmp-cell cmp-item">輔助結構</span>
+            <span class="cmp-cell">鋁合金接件</span>
+            <span class="cmp-cell">強化鋁合金結構件</span>
+          </div>
+          <div class="cmp-row is-diff">
+            <span class="cmp-cell cmp-item">組裝方式</span>
+            <span class="cmp-cell">傳統榫接結構</span>
+            <span class="cmp-cell">易拆卸優化結構</span>
+          </div>
+
+          <!-- 兩代相同的兩項 -->
+          <div class="cmp-row">
+            <span class="cmp-cell cmp-item">作品尺寸</span>
+            <span class="cmp-cell cmp-both">1300 x 1030 mm<em class="cmp-tag">兩代相同</em></span>
+          </div>
+          <div class="cmp-row">
+            <span class="cmp-cell cmp-item">構件內容</span>
+            <span class="cmp-cell cmp-both">2 把兒童椅構件<em class="cmp-tag">兩代相同</em></span>
+          </div>
+
+          <!-- 尚未量測/確認的兩項，維持原本的「待補」狀態，不自行填數字 -->
+          <div class="cmp-row">
+            <span class="cmp-cell cmp-item">適用年齡</span>
+            <span class="cmp-cell cmp-both"><em class="cmp-pending">確認後補上</em></span>
+          </div>
+          <div class="cmp-row">
+            <span class="cmp-cell cmp-item">承重</span>
+            <span class="cmp-cell cmp-both"><em class="cmp-pending">量測後補上</em></span>
+          </div>
+        </div>
+      </div>
+    </details>
   </div>
 
   <div id="designers" class="scroll-section">
@@ -1148,6 +1788,7 @@
       const img = new Image();
       img.src = `images/mode-${modeKey}.jpg`;
       img.alt = `畫作椅【${modeName}】模式展示`;
+      // 大預覽是滿版情境圖（16:9 與預覽框同比例，cover 不會裁到東西）
       img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
       // 圖片存在 → 顯示圖片；缺檔 → 顯示佔位文字（不會破圖）
       // token 不符表示使用者已點了別張卡片，放棄這次結果
@@ -1191,40 +1832,122 @@
     window.addEventListener('scroll', updateNavChrome, { passive:true });
     window.addEventListener('load', updateNavChrome);
 
-    // Hero carousel (swipe + arrows + dots)
+    // 原色↔淡色 對照滑桿：只更新一個 CSS 變數，不碰輪播邏輯
+    (function initToneSlider(){
+      const vp = document.querySelector('.hero-viewport');
+      // 每張 slide 各有一個滑桿（把手才會貼齊自己那張圖），但共用 hero-viewport 上的
+      // --tone，所以拖任何一個，三張的色調位置都一致，切換 slide 不會跳掉。
+      const ranges = [...document.querySelectorAll('.tone-range')];
+      if(!vp || !ranges.length) return;
+      const REST = 62;               // 停在偏原色的位置：主視覺是第二代，淡色露一角當提示
+      const apply = (v) => {
+        ranges.forEach(r => { r.value = String(v); });
+        vp.style.setProperty('--tone', v + '%');
+      };
+      ranges.forEach(r => {
+        r.addEventListener('input', () => { vp.classList.remove('tone-animating'); apply(r.value); });
+        r.addEventListener('change', () => apply(r.value));
+      });
+
+      // 開場：先全原色，再滑到 REST。讓人一眼看到這條線會動、可以拖。
+      apply(100);
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) { apply(REST); return; }
+      const start = () => {
+        vp.classList.add('tone-animating');
+        apply(REST);
+        setTimeout(() => vp.classList.remove('tone-animating'), 1400);
+      };
+      if (document.readyState === 'complete') setTimeout(start, 520);
+      else window.addEventListener('load', () => setTimeout(start, 520));
+    })();
+
+    // Hero carousel（循環：左右都有露邊，滑到最後一張還能繼續往右回到第一張）
     (function initHeroCarousel(){
       const carousel = document.querySelector('.hero-carousel');
       if(!carousel) return;
 
       const viewport = carousel.querySelector('.hero-viewport');
       const track = carousel.querySelector('.hero-track');
-      const slides = Array.from(carousel.querySelectorAll('.hero-slide'));
+      const real = Array.from(carousel.querySelectorAll('.hero-slide'));
       const dots = Array.from(carousel.querySelectorAll('.hero-dot'));
       const prev = carousel.querySelector('.hero-prev');
       const next = carousel.querySelector('.hero-next');
 
-      if(!viewport || !track || slides.length === 0) return;
+      if(!viewport || !track || real.length === 0) return;
+      const N = real.length;
 
-      // 預設讓視覺停在中間卡
-      let index = Math.min(1, slides.length - 1);
+      /* ── 循環的做法：頭尾各插入「兩張」複製張 ──
+         排列變成  [複2][複3] [1][2][3] [複1][複2]
+         為什麼每側要兩張而不是一張：停在複製張時，它自己也需要左右露邊。
+         只複製一張的話，尾部複製張是整條的最後一格、右邊沒東西可露，
+         歸位到真張後右邊突然多出一張 —— 實測會看到畫面跳動。
 
-      const getCenterIndex = () => {
+         歸位（複製張 → 真張）做三件事，缺一個就看得出來：
+           ① 位移量用「N × 相鄰間距」直接改寫 scrollLeft，
+              不用 offsetLeft 重算：scroll-snap 的吸附點是「變形後」的方框，
+              縮放 0.86 與 1.0 的吸附點不同，實測會差 156px。
+           ② 暫時關掉 .hero-slide 的過場動畫，否則新的當前張會從 0.86 放大到 1，
+              跳的那一瞬間看得到它在長大。
+           ③ 因為整條的排列以 N 為週期，位移剛好 N 格時畫面內容完全相同。
+
+         複製張是 JS 產生的，HTML 裡仍然只有三張 —— 換圖時只需要改那三張。 */
+      const makeClone = (src) => {
+        const c = src.cloneNode(true);
+        c.dataset.clone = '1';
+        c.setAttribute('aria-hidden', 'true');
+        // aria-hidden 的容器裡不能留可聚焦元素，所以複製張的滑桿一律停用
+        c.querySelectorAll('input, button, a').forEach(el => { el.disabled = true; el.tabIndex = -1; });
+        return c;
+      };
+      const hasClones = N > 1;
+      const K = hasClones ? Math.min(2, N) : 0;         // 每側的複製張數
+      if (hasClones) {
+        for (let j = 0; j < K; j++) track.insertBefore(makeClone(real[N - K + j]), real[0]);
+        for (let j = 0; j < K; j++) track.appendChild(makeClone(real[j]));
+      }
+      const cells = Array.from(track.querySelectorAll('.hero-slide'));
+      const cellOf = (i) => K + i;                      // 真實索引 → cell 位置
+      const logicalOf = (k) => ((k - K) % N + N) % N;   // cell 位置 → 真實索引
+      /* 相鄰兩張的版面間距（含 gap）。
+         不能用 offsetLeft：那是「取整」後的整數，而張寬是百分比、常有小數，
+         乘上 N 之後誤差會累積，歸位就會差個 1–3px（實測會看到畫面跳一下）。
+         改法：挑「兩張都不是當前張」的相鄰組，它們縮放相同，
+         矩形左緣的差就剛好等於版面間距，而且是次像素精度。 */
+      const pitch = () => {
+        for (let k = 0; k + 1 < cells.length; k++) {
+          if (!cells[k].classList.contains('is-active') && !cells[k + 1].classList.contains('is-active')) {
+            return cells[k + 1].getBoundingClientRect().left - cells[k].getBoundingClientRect().left;
+          }
+        }
+        return cells.length > 1 ? cells[1].offsetLeft - cells[0].offsetLeft : 0;
+      };
+
+      let cell = cellOf(0);      // 預設停在第一張（最左邊那顆圓點）
+      let index = 0;
+
+      const getCenterCell = () => {
         const vpRect = viewport.getBoundingClientRect();
         const vpCenter = vpRect.left + vpRect.width / 2;
-        let best = 0;
-        let bestDist = Infinity;
-        slides.forEach((s, i) => {
+        let best = 0, bestDist = Infinity;
+        cells.forEach((s, k) => {
           const r = s.getBoundingClientRect();
-          const c = r.left + r.width / 2;
-          const d = Math.abs(c - vpCenter);
-          if(d < bestDist){ bestDist = d; best = i; }
+          const d = Math.abs(r.left + r.width / 2 - vpCenter);
+          if(d < bestDist){ bestDist = d; best = k; }
         });
         return best;
       };
 
-      const setActive = (i) => {
-        index = Math.max(0, Math.min(slides.length - 1, i));
-        slides.forEach((s, si) => s.classList.toggle('is-active', si === index));
+      const setActive = (k) => {
+        cell = Math.max(0, Math.min(cells.length - 1, k));
+        index = logicalOf(cell);
+        cells.forEach((s, si) => {
+          s.classList.toggle('is-active', si === cell);
+          // 只讓當前那張真張的色調滑桿可操作：停用的同時也退出 Tab 順序，
+          // 鍵盤使用者不會跑去調一個看不見的控制項。複製張永遠停用。
+          const r = s.querySelector('.tone-range');
+          if (r) r.disabled = !(si === cell && !s.dataset.clone);
+        });
         dots.forEach((d, di) => {
           d.classList.toggle('is-active', di === index);
           d.setAttribute('aria-current', String(di === index));
@@ -1232,39 +1955,72 @@
       };
 
       // 程式化捲動旗標：goTo() 的 smooth 捲動進行中，暫停 scroll 置中同步。
-      // 沒有這個旗標時，動畫初期 getCenterIndex() 仍指向舊卡，會把 index 改回去
+      // 沒有這個旗標時，動畫初期 getCenterCell() 仍指向舊卡，會把 index 改回去
       // → dot 閃爍、快速連點箭頭時第二下被吞掉
       let isProgrammatic = false;
       let settleTimer = null;
+      let idleTimer = null;
 
-      const goTo = (i, behavior='smooth') => {
-        const target = slides[i];
+      const scrollToCell = (k, behavior) => {
+        const target = cells[k];
         if(!target) return;
-        isProgrammatic = true;
+        // transform: scale() 不影響 offsetLeft/clientWidth，所以這裡算的是未縮放的版面位置
         const left = target.offsetLeft - (viewport.clientWidth - target.clientWidth) / 2;
         track.scrollTo({ left, behavior });
-        setActive(i);
-        // scrollend 不支援的瀏覽器：以計時器後備恢復同步
+      };
+
+      const goTo = (k, behavior='smooth') => {
+        if(!cells[k]) return;
+        isProgrammatic = true;
+        scrollToCell(k, behavior);
+        setActive(k);
         clearTimeout(settleTimer);
         settleTimer = setTimeout(() => { isProgrammatic = false; }, 700);
+      };
+
+      /* 停在複製張時，瞬間跳回對應的真張。位移剛好 N 格 ⇒ 畫面內容完全相同。 */
+      const normalize = () => {
+        if(!hasClones) return false;
+        let to = cell;
+        if (cell < K) to = cell + N;                    // 落在頭部複製張
+        else if (cell >= K + N) to = cell - N;          // 落在尾部複製張
+        if (to === cell) return false;
+        const from = cell;                              // setActive 會改寫 cell，位移量要先算
+        isProgrammatic = true;
+        // ② 關掉過場動畫與捲動吸附，並強制重排讓它立即生效。
+        //    吸附若還開著，寫入 scrollLeft 之後會被再吸一次，實測殘留 1px 偏差。
+        track.classList.add('is-jumping');
+        void track.offsetWidth;
+        const fromLeft = cells[from].getBoundingClientRect().left;
+        setActive(to);
+        // ① 直接位移 (to - from) 格的距離，不重算 offsetLeft
+        //    （避開 scroll-snap 以「變形後方框」吸附所造成的差異）
+        track.scrollLeft += (to - from) * pitch();
+        void track.offsetWidth;
+        // ③ 殘差校正：讓歸位後那張圖落在原本複製張的同一個螢幕位置，
+        //    小數與吸附造成的誤差一次補掉。
+        track.scrollLeft += cells[to].getBoundingClientRect().left - fromLeft;
+        void track.offsetWidth;
+        requestAnimationFrame(() => track.classList.remove('is-jumping'));
+        clearTimeout(settleTimer);
+        settleTimer = setTimeout(() => { isProgrammatic = false; }, 80);
+        return true;
       };
 
       // smooth 捲動結束即恢復 scroll 同步（支援 scrollend 的瀏覽器）
       track.addEventListener('scrollend', () => {
         clearTimeout(settleTimer);
         isProgrammatic = false;
+        normalize();
       }, { passive:true });
 
-      // Buttons
-      prev?.addEventListener('click', () => goTo(Math.max(0, index - 1)));
-      next?.addEventListener('click', () => goTo(Math.min(slides.length - 1, index + 1)));
+      // Buttons（不再夾在 0..N-1，因為兩端有複製張可以繼續走）
+      prev?.addEventListener('click', () => goTo(cell - 1));
+      next?.addEventListener('click', () => goTo(cell + 1));
 
       // Dots
       dots.forEach(d => {
-        d.addEventListener('click', () => {
-          const to = Number(d.dataset.to || 0);
-          goTo(to);
-        });
+        d.addEventListener('click', () => goTo(cellOf(Number(d.dataset.to || 0))));
       });
 
       // Update active on swipe/trackpad（程式化捲動期間跳過，避免競態）
@@ -1273,14 +2029,80 @@
         if(raf) cancelAnimationFrame(raf);
         raf = requestAnimationFrame(() => {
           if(isProgrammatic) return;
-          const ci = getCenterIndex();
-          if(ci !== index) setActive(ci);
+          const ck = getCenterCell();
+          if(ck !== cell) setActive(ck);
         });
+        // scrollend 不支援時的後備：捲動停止 180ms 後也做一次歸位
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => { if(!isProgrammatic) normalize(); }, 180);
       }, { passive:true });
 
-      // Init
-      window.addEventListener('load', () => goTo(index, 'auto'));
-      window.addEventListener('resize', () => goTo(index, 'auto'));
+      /* 把張寬釘成整數 px。間距是 0，所以 pitch 也是整數，
+         循環歸位的位移量（N × pitch）就能被整數的 scrollLeft 精確表示。 */
+      const RATIO = 0.668;           // 主圖佔輪播的比例（示意圖量出來的）
+      const sizeSlides = () => {
+        if (getComputedStyle(track).columnGap !== '0px') { track.style.removeProperty('--slide-w'); return; }
+        const w = Math.round(track.clientWidth * RATIO);
+        if (w > 0) track.style.setProperty('--slide-w', w + 'px');
+      };
+
+      // Init：立刻定位一次（否則第一畫面會停在頭部複製張），載入完成與改變視窗大小再校正
+      sizeSlides(); goTo(cell, 'auto');
+      window.addEventListener('load', () => { sizeSlides(); goTo(cell, 'auto'); });
+      window.addEventListener('resize', () => { sizeSlides(); goTo(cell, 'auto'); });
+    })();
+
+    /* 設計理念的介紹影片。
+       data-video 空 → 按鈕保持 hidden（不會有點下去沒反應的按鈕、也不會被 Tab 到）。
+       有值 → 顯示播放鈕；點了才載入影片，所以平常不會有 YouTube 的追蹤與流量。 */
+    (function initAboutVideo(){
+      const box = document.querySelector('.about-media');
+      if(!box) return;
+      const btn = box.querySelector('.media-play');
+      const url = (box.dataset.video || '').trim();
+      if(!btn) return;
+      if(!url){ btn.hidden = true; return; }
+
+      const label = box.querySelector('.media-play-label')?.textContent.trim() || '播放介紹影片';
+      btn.hidden = false;
+      btn.setAttribute('aria-label', label);
+      box.classList.add('has-video');   // 讓 CSS 把佔位文字讓開，避免與播放鈕標籤重疊
+
+      // YouTube 兩種常見網址都轉成 embed
+      const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+
+      /* 用檔案直接開（file://）時，瀏覽器送出的來源是 null，YouTube 會拒絕嵌入
+         並顯示「錯誤 153 影片播放器設定錯誤」。那不是影片或設定的問題，
+         但給使用者一個註定失敗的播放器沒有意義 —— 這種情況改成直接開 YouTube。
+         放到網站上（http/https）就會正常嵌入播放，不會走這條路。 */
+      const isFile = location.protocol === 'file:';
+      if (isFile && yt) {
+        btn.addEventListener('click', () => {
+          window.open(`https://www.youtube.com/watch?v=${yt[1]}`, '_blank', 'noopener');
+        });
+        btn.title = '本機預覽會另開 YouTube 分頁；放到網站上就會直接在頁面內播放';
+        return;
+      }
+
+      const play = () => {
+        let node;
+        if (yt) {
+          node = document.createElement('iframe');
+          node.src = `https://www.youtube-nocookie.com/embed/${yt[1]}?autoplay=1&rel=0`;
+          node.allow = 'accelerometer; autoplay; encrypted-media; picture-in-picture';
+          node.allowFullscreen = true;
+          node.title = label;
+        } else {
+          node = document.createElement('video');
+          node.src = url;
+          node.controls = true; node.autoplay = true; node.playsInline = true;
+          node.setAttribute('aria-label', label);
+        }
+        node.className = 'media-frame';
+        box.appendChild(node);
+        btn.hidden = true;
+      };
+      btn.addEventListener('click', play);
     })();
 
     // Mobile mode-strip arrows

@@ -1,0 +1,31 @@
+# 這個專案是單一 HTML 檔，沒有建置步驟、沒有相依套件，
+# 正常情況不會產生下面這些東西。但萬一在這個資料夾裡跑了什麼工具，
+# 這份清單可以擋住不該進版控的檔案。
+
+# 相依套件與建置產物（可重建，不進版控）
+node_modules/
+dist/
+build/
+package-lock.json
+
+# 測試或截圖工具的暫存輸出
+shots/
+shots-*/
+pc-tmp/
+*.tmp.html
+.tmp-*
+
+# 編輯器與作業系統雜物
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
+*.log
+
+# 機器專屬的捷徑（含絕對路徑，換電腦不通用）
+*.lnk
+
+# 原始影片檔通常很大，若要放請自行斟酌（GitHub 單檔上限 100MB）
+# *.mov
+# *.mp4
