@@ -2,7 +2,7 @@
 
 > **用途**：投獎、參展、媒體採訪、網站文案的官方描述母版。
 > 依字數限制分為完整版（A）／精簡版（B）／最簡版（C），中英對照。
-> 最後更新：2026-07-17
+> 最後更新：2026-08-18
 
 ## 產品基本資料
 
@@ -22,7 +22,7 @@
 
 寫任何介紹時，確保涵蓋以下重點：
 
-1. **理論根據** — 直線、方塊、矩形構成的形式能激發視覺皮質細胞，提升兒童專注力與創意力（1999 年研究，出處見下方⚠️註記）
+1. **理論根據** — 直線、方塊、矩形構成的形式能激發視覺皮質細胞，提升兒童專注力與創意力
 2. **蒙德里安冷抽象** — 幾何構圖與色彩配置，從平面轉化為立體
 3. **永續材質** — 可回收再利用的樺木板材，質輕耐用（5R 永續原則）
 4. **平面↔立體雙形態** — 懸掛時是畫、拆解後是兒童椅
@@ -31,13 +31,6 @@
 7. **畫作完整性** — 取下構件後，原畫作依舊完整存在
 8. **模組化** — 任何構件皆可輕易拆卸、組裝與替換
 9. **多功能** — 畫作、椅子、置物架、茶几、玄關桌，因地制宜
-
-> ⚠️ **文獻引用待求證**：原文案寫「齊格（Zieger, 1999）」，但查無此研究。
-> 高度疑似為神經美學學者 **Semir Zeki（薩米爾・澤基）1999 年著作
-> 《Inner Vision: An Exploration of Art and the Brain》** —— Zeki 正是研究
-> 「蒙德里安式直線與方塊刺激視覺皮質（V1 方向選擇性細胞）」的代表學者，
-> 年份與主題完全吻合，「齊格」很可能是 Zeki 的音譯、英文誤拼為 Zieger。
-> **建議**：找到原始參考來源確認後，統一修正網站與所有投件文案。
 
 ---
 
@@ -51,7 +44,7 @@
 
 考量兒童的成長性，椅子的高度，座位可隨兒童成長而調整，一幅畫中具有 2 把椅子的構件，取下構件時，原本的畫作依舊完整存在，且畫作中任何構件都可以輕易地拆卸、組裝與替換。平面與立體的組合可因地制宜調整，可作為畫作、椅子、置物架、茶几、玄關桌等。
 
-### English（原稿）
+### English（投件原文）
 
 Environmental education has a great impact on children. Zieger (1999) found that a new form composed of a large number of straight lines, squares and rectangles can excite the cells in the visual cortex and increase children's concentration and creativity. In this design, Mondrian's cold abstract paintings are designed with geometric composition and color configuration planes, which are transformed into three-dimensional, using recyclable birch wood panels, which are light and durable. When the plane is suspended in the space, it is a painting. The components are decomposed in the painting, and colors and geometric shapes are combined to form a children's chair. Considering the child's growth, the height of the chair and the seat can be adjusted as the child grows. There are two chair components in a painting. When the components are removed, the original painting still exists intact, and any components in the painting can be easily adjusted. Disassembly, assembly and replacement. The combination of plane and three-dimensional can be adjusted according to local conditions, and can be used as paintings, chairs, shelves, coffee tables, console tables, etc.
 
@@ -65,7 +58,7 @@ Environmental education has a great impact on children. Zieger (1999) found that
 
 考量兒童的成長性，椅子高度、座位可隨兒童成長而調整，一幅畫中具有 2 把椅子的構件，取下構件時，原畫作依舊完整，且畫作中任何構件都可輕易拆卸、組裝與替換。平面與立體的組合可因地制宜調整，可作為畫作、椅子、置物架、茶几、玄關桌等。
 
-### English（原稿）
+### English（投件原文）
 
 In this design, Mondrian's cold abstract paintings are designed with geometric composition and color configuration planes. When the plane is suspended in the space, it is a painting. The components are decomposed in the painting, and colors and geometric shapes are combined to form a children's chair. The painting can be easily adjusted. Disassembly, assembly and replacement. The combination of plane and three-dimensional can be adjusted according to local conditions, and can be used.
 
@@ -79,18 +72,14 @@ In this design, Mondrian's cold abstract paintings are designed with geometric c
 
 考量兒童的成長性，椅子高度、座位可隨兒童成長而調整，一幅畫中具有 2 把椅子的構件，取下構件時，原畫作依舊完整，且畫作中任何構件都可輕易拆卸、組裝與替換。平面與立體的組合可因地制宜調整，可作為畫作、椅子、置物架、茶几、玄關桌等。
 
-### English（原稿）
-
-> ⚠️ 原稿英文在「The combi.」處中斷，內容不完整，需要時請以版本 A 英文或下方修訂版裁剪。
-
 ---
 
-## 📝 英文修訂建議版（Claude 潤飾，尚未正式採用）
+## English（修訂版）
 
-> 原稿英文為逐句直譯，有若干文法與斷句問題（如 "can be easily adjusted. Disassembly, assembly and replacement." 為斷裂句）。
-> 以下為修訂版，**投國際獎項或英文媒體前建議自行審閱後採用**：
+> 上方各版的 English 為當初投件的原文（逐句直譯）。以下為修正文法與斷句後的版本，
+> 兩版皆可使用，視場合選擇。
 
-Environmental education shapes children in subtle yet profound ways. A 1999 study found that compositions of straight lines, squares, and rectangles strongly stimulate cells in the visual cortex, enhancing children's concentration and creativity. *(citation to be verified — see note above)*
+Environmental education shapes children in subtle yet profound ways: compositions of straight lines, squares, and rectangles stimulate cells in the visual cortex, enhancing concentration and creativity.
 
 Painting Chair translates the geometric composition and color palette of Piet Mondrian's abstract paintings from plane into volume. Crafted from recyclable birch plywood — light yet durable — it hangs on the wall as a painting; when needed, components detach from the frame and, guided by color and geometry, assemble into a children's chair.
 

@@ -23,6 +23,14 @@ desktop.ini
 .DS_Store
 *.log
 
+# 舊版留檔：只在本機用來對照調整新版，不進版控
+index_old.html
+index_*.html
+!index.html
+
+# 本機維護備忘（內部筆記，不對外）
+NOTES.local.md
+
 # 機器專屬的捷徑（含絕對路徑，換電腦不通用）
 *.lnk
 

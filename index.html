@@ -22,7 +22,7 @@
   <title>畫作椅 Painting Chair | 藝術、教育與成長的演進</title>
 
   <!-- SEO -->
-  <meta name="description" content="畫作椅 Painting Chair — 以蒙德里安冷抽象美學為靈感的多功能兒童家具。懸掛時是一幅畫，拆解後是隨孩子成長調整的兒童椅；一幅畫內含兩把椅構件，取下後畫作依然完整。可回收樺木打造，榮獲 2021 當代好設計獎。" />
+  <meta name="description" content="畫作椅 Painting Chair — 以蒙德里安冷抽象美學為靈感的多功能兒童家具。懸掛時是一幅畫，拆解後是隨孩子成長調整的兒童椅；一幅畫內含兩把兒童椅構件，取下後畫作依然完整。可回收樺木打造，榮獲 2021 當代好設計獎。" />
   <meta name="author" content="高子晴、劉芃均" />
 
   <!-- Open Graph（LINE / Facebook 分享預覽） -->
@@ -70,11 +70,10 @@
       scroll-behavior: smooth;
     }
 
-    /* 品牌字體設定：Bauhaus 93 */
-    .font-bauhaus {
-      font-family: 'Bauhaus 93', 'Arial Black', sans-serif;
-      font-weight: normal;
-    }
+    /* 商標。已改用 SVG 輪廓，不再依賴系統安裝 Bauhaus 93。
+       高度 27.9px = 原本 30px 字級時的墨跡高度，所以視覺尺寸不變。 */
+    .brand-wordmark { display: flex; align-items: center; }
+    .brand-wordmark svg { height: 27.9px; width: auto; display: block; }
 
     .section-padding { padding: clamp(72px, 8vw, 120px) clamp(18px, 8%, 88px); }
     .rounded-custom { border-radius: 32px; }
@@ -156,7 +155,9 @@
       padding: 4px 12px;
       background: var(--brand-green);
       color: white;
-      font-size: 10px;
+      /* 10px 的中文太小（本站規則：中文一律 ≥12px），
+         2026-08-18 徽章改成中文之後一併調到 12px。 */
+      font-size: 12px;
       border-radius: 4px;
       letter-spacing: 1px;
       margin-bottom: 8px;
@@ -621,7 +622,14 @@
         scrollbar-width:none;
       }
       .mode-strip::-webkit-scrollbar{ display:none; }
-      .mode-card{ scroll-snap-align:start; min-width: 160px; }
+      /* flex-basis 必須是「確定的值」：縮圖用 aspect-ratio 決定高、寬要靠卡片給，
+         而卡片在 flex 容器裡若沒有 basis 就改用 max-content ——
+         結果拿圖片的原始寬度（1200px）當卡寬，實測爆成 1214×868。
+         .mode-strip 有 overflow-x:auto 會把它吸收成內部捲軸，
+         所以「頁面沒有橫向溢出」那條測試看不出來（假通過）。 */
+      /* 卡寬不在這裡設 —— 第 265 行的 `.mode-strip > .mode-card` 特異性更高，
+         寫在這裡的 flex 不會生效。真正的設定在樣式表後段。 */
+      .mode-card{ scroll-snap-align: start; }
     }
 
     /* ===== Nav shrink on scroll ===== */
@@ -638,7 +646,7 @@
     .prose-width{ max-width: 64ch; margin-left:auto; margin-right:auto; }
 
     /* =========================================================
-       ✅ 最終版：手機 Hero 調小＋右側露邊（Apple peek）
+       手機 Hero：縮小＋右側露邊
        - 圖面維持 16:9
        - 玻璃外框仍滿版
        - dots：展示=橢圓，未展示=圓點
@@ -650,7 +658,7 @@
         max-width: none;
         margin-left: calc(50% - 50vw);
         margin-right: calc(50% - 50vw);
-        /* ⭐ 此處將 mb 改為 36px (原 10px)，拉開與下方標題文字的間距，同時讓圖片整體視角往上提 */
+        /* 與下方標題文字之間留 36px，同時讓圖片整體視角往上提 */
         margin-bottom: 36px;
       }
 
@@ -722,23 +730,55 @@
        stone-400 (#a8a29e) 只有 2.48:1，WCAG AA 要求 4.5:1。
        兩者的每一處用法都不合格，所以整體加深而不是逐處挑。
        #6b6560 在米白底上是 5.5:1，仍保有「次要資訊」的輕盈感。          */
-    .text-stone-300, .text-stone-400 { color: #6b6560 !important; }
+    .text-stone-400 { color: #6b6560 !important; }
 
-    /* 拉丁文眉標（DESIGN & SCIENCE / EVOLUTION / THE DESIGNERS 等）
-       改用品牌綠，既解決對比（5.3:1）又讓它成為刻意的視覺記號而不是淡掉的裝飾 */
-    .text-\[10px\].tracking-\[0\.4em\],
-    h5.text-\[10px\].tracking-widest { color: #5b6d5f !important; }
+    /* ---- ①-b 例外：刻意淡化的裝飾性文字 ---------------------------------
+       裝飾性標籤採較淡的色階，與內容文字拉開層次：
+       拉丁文眉標、頁尾與 IG 說明行用 --tone-faint，未選中的導覽項用 --tone-nav-idle，
+       都比上面 ① 的通用次要色（#6b6560）更淡一階。
+
+       這兩類文字不承載資訊——每個拉丁文眉標的下一行就是同義的中文標題
+       （EVOLUTION → 世代演進與產品規格），頁尾是版權標記，
+       導覽項未選中時仍有 hover 與底線提示。
+       字級維持 ① 加大後的 12px／11px。
+
+       深淺集中由下面兩個變數控制，改一個數值即可全站生效。
+       ---------------------------------------------------------------------- */
+    :root {
+      --tone-faint: #d6d3d1;
+      --tone-nav-idle: #a8a29e;
+    }
+
+    /* 語意化類名，取代原本借用的 Tailwind text-stone-300。
+       2026-08-18：舊寫法有兩個問題——① 靠「同時命中 text-[10px] 與 tracking-[0.4em]」
+       這種依賴字級的脆弱選擇器上色，改字級就會連帶掉色；② HTML 上寫 text-stone-300
+       但畫面其實是別的顏色，改樣式時很容易誤判。
+       現在 HTML 直接標 txt-faint / txt-quiet，看類名就知道結果。 */
+    .txt-faint { color: var(--tone-faint); }
+    .txt-quiet { color: #6b6560; }
+
+    /* 導覽項：未選中的淺一階，選中的維持品牌綠 + 粗體 + 底線（.nav-active 另有規則）。
+       直接命中元素的規則永遠贏過從容器 .text-stone-400 繼承來的顏色，
+       所以桌機與行動版選單都吃得到。 */
+    .nav-link:not(.nav-active) { color: var(--tone-nav-idle) !important; }
 
     /* ---- ② 字級：中文一律 ≥12px ------------------------------------------
        10px 的中文筆畫會糊在一起；9px 的頁尾幾乎不可讀。
        只調整下限，不改版面結構。                                          */
-    .text-\[9px\]  { font-size: 11px !important; line-height: 1.6 !important; }
+    .text-\[9px\]  { font-size: 12px !important; line-height: 1.6 !important; }
+    /* IG 按鈕下方那行「FOLLOW OUR JOURNEY ON INSTAGRAM」在窄螢幕會斷成兩行
+       ——0.4em 字距下單行需要約 340px，而 375px 手機只有 315px 可用。
+       這在字級還是 11px 時就已經如此（不是調大字級造成的）。
+       縮字距而不是縮字級，可讀性才不會退回去。 */
+    @media (max-width: 430px) {
+      .ig-caption { letter-spacing: .2em !important; }
+    }
     .text-\[10px\] { font-size: 12px !important; line-height: 1.6 !important; }
 
     /* ---- ③ 模式列的箭頭 --------------------------------------------------
        實測白字在米白底上是 1.06:1，等於看不見，所以這裡改成墨色。
        模式列的背景是白卡片，深色箭頭才讀得到。
-       輪播箭頭已於 2026-08-13 依使用者指定改回「細白箭頭＋暗影」，
+       輪播箭頭採「細白箭頭＋暗影」的低調樣式，
        規則在下方的滑桿區塊之後，不再受這條影響。                        */
     .mode-arrow, [aria-label*="向左"], [aria-label*="向右"] { color: #3a3a3a !important; }
     .mode-arrow span, [aria-label*="向左"] span, [aria-label*="向右"] span {
@@ -783,9 +823,8 @@
     }
 
     /* ---- ⑥ 規格表的「待補」值 --------------------------------------------
-       文字一字不改（依「內容保留」原則），只改視覺：
-       原本是 #c2c2c2 的隱形灰字（1.78:1），既讀不到又像壞掉；
-       改成明確的「待公開」標籤，讓它看起來是刻意的狀態而不是忘記填。    */
+       原本是 #c2c2c2 的灰字（對比僅 1.78:1，幾乎讀不到）；
+       改成有底色的膠囊標籤，讓它在表格裡是一個明確可讀的狀態。          */
     .spec-val[style*="c2c2c2"] {
       color: #6b6560 !important;
       background: #f2ede6; border: 1px solid rgba(91,109,95,.28);
@@ -814,7 +853,7 @@
        交界不是硬邊，是一條 ±38px 的漸層帶，兩色是「融合」而不是「切斷」。
        ========================================================================= */
     /* 宣告成真正的百分比型別，--tone 才能被 transition 平滑補間。
-       不支援 @property 的瀏覽器仍可正常拖動，只是少了開場動畫。 */
+       不支援 @property 的瀏覽器仍可正常拖曳，只是少了開場動畫。 */
     @property --tone {
       syntax: '<percentage>';
       inherits: true;
@@ -825,11 +864,14 @@
     .hero-slide .tone-pale {
       position: absolute; inset: 0; width: 100%; height: 100%;
       object-fit: cover; z-index: 2;
-      /* 從右側顯示淡色：左邊透明、右邊不透明，中間 76px 漸層過渡 */
+      /* 從左側顯示淡色（第一代）：左邊不透明、右邊透明，中間 76px 漸層過渡。
+         2026-08-13 反轉方向 —— 世代順序要由左到右（Gen1 → Gen2），
+         與 Before → After 的世代對照方向一致。
+         底層是原色（第二代），所以分隔線右側看到的是第二代。 */
       -webkit-mask-image: linear-gradient(to right,
-        transparent calc(var(--tone) - 38px), #000 calc(var(--tone) + 38px));
+        #000 calc(var(--tone) - 38px), transparent calc(var(--tone) + 38px));
       mask-image: linear-gradient(to right,
-        transparent calc(var(--tone) - 38px), #000 calc(var(--tone) + 38px));
+        #000 calc(var(--tone) - 38px), transparent calc(var(--tone) + 38px));
     }
     /* 滑桿貼齊自己那張圖片（父層是 .img-container，position:relative）。
        曾經放在 hero-carousel 層 → inset:0 連縮圖一起蓋住、真實滑鼠點不到；
@@ -857,16 +899,17 @@
     }
     .tone-handle i {
       position: absolute; top: 50%; left: 50%; translate: -50% -50%;
-      width: 42px; height: 42px; border-radius: 50%;
-      background: rgba(255,255,255,.96); box-shadow: 0 3px 14px rgba(0,0,0,.22);
+      width: 34px; height: 34px; border-radius: 50%;
+      background: #fff;                            /* 純白、不透明（原本 .96 在紅色塊上會透出底色）*/
+      box-shadow: 0 2px 8px rgba(20,17,14,.22);    /* 陰影收緊，配合縮小後的圓 */
     }
     /* 把手中央的左右箭頭，用純 CSS 畫，不引入圖片 */
     .tone-handle i::before, .tone-handle i::after {
-      content: ""; position: absolute; top: 50%; width: 7px; height: 7px;
-      border-top: 2px solid #3a3a3a; border-right: 2px solid #3a3a3a;
+      content: ""; position: absolute; top: 50%; width: 6px; height: 6px;
+      border-top: 1.7px solid #3a3a3a; border-right: 1.7px solid #3a3a3a;
     }
-    .tone-handle i::before { left: 11px; translate: 0 -50%; rotate: -135deg; }
-    .tone-handle i::after  { right: 11px; translate: 0 -50%; rotate: 45deg; }
+    .tone-handle i::before { left: 9px; translate: 0 -50%; rotate: -135deg; }
+    .tone-handle i::after  { right: 9px; translate: 0 -50%; rotate: 45deg; }
     .tone-tag {
       position: absolute; bottom: 12px; font-size: 11px; font-weight: 700;
       letter-spacing: .14em; padding: 4px 10px; border-radius: 999px;
@@ -874,6 +917,13 @@
     }
     .tone-tag-l { left: 12px; }
     .tone-tag-r { right: 12px; }
+    /* 分隔線掃過標籤之後把它淡出。
+       線推到最右邊（全第一代）時，右下角的 Gen2 標籤會壓在第一代畫面上；
+       推到最左邊時左下角的 Gen1 標籤同理。門檻要用實際像素算——
+       標籤寬度是固定 px，容器寬度隨版面變，兩者比例在手機與桌機差一倍以上，
+       所以判斷寫在 JS 的 syncTags()，這裡只負責過場。 */
+    .tone-tag { transition: opacity .3s var(--ease); }
+    .tone-tag.is-past { opacity: 0; }
     .tone-range:focus-visible ~ .tone-handle i { outline: 2px solid #5b6d5f; outline-offset: 3px; }
 
     /* 徽章的圖示與文字對齊（文字未刪，只是把 emoji 換成線性 SVG） */
@@ -888,7 +938,7 @@
     }
 
     /* ---- 左右箭頭：加粗的白色線條、滑鼠靠近才顯現 ----
-       2026-08-13 依使用者指定：不要描邊、不要圓底，改用加粗來取得存在感。
+       不用描邊、不用圓底，改以加粗取得存在感。
        所以箭頭改成 SVG 線條（字元 ‹ › 的粗細受字體控制，改不動），
        stroke-width 2.4 + 圓端，並用一層擴散的柔影（不是框線）避免完全融進背景。 */
     .hero-arrow {
@@ -946,11 +996,59 @@
         #fff; }
     .mode-thumb.is-empty img { display: none; }
     /* 文字區。上下留白收緊：標題上方 11.2→7px、說明下方 12.8→9px */
-    .mode-card h4 { margin: 0 !important; padding: 7px 14px 2px; font-size: 14px; font-weight: 600; }
+    .mode-card h3 { margin: 0 !important; padding: 7px 14px 2px; font-size: 14px; font-weight: 600; }
     .mode-card p  { margin: 0 !important; padding: 0 14px 9px; }
+    /* 手機的卡片內裝。必須放在上面 .mode-card{padding:0 !important} 之後，
+       否則會被蓋掉（兩邊都是 !important 時由後者勝）。 */
+    /* 手機圓點只有 8px 高，觸控目標太小。用透明的 ::after 擴大可點範圍到 26px，
+       視覺完全不變（Apple 與 WCAG 都建議觸控目標至少 24px）。 */
+    @media (max-width: 767px) {
+      .hero-dot { position: relative; }
+      .hero-dot::after {
+        content: ''; position: absolute; inset: -9px;
+        border-radius: 999px;
+      }
+    }
+
+    /* 767 而不是 768：.mode-strip 的基礎樣式是 grid，只有 ≤767 才切成橫向捲動，
+       所以 768px 已經是桌機的格線排版，不該套手機的卡寬。 */
+    @media (max-width: 767px) {
+      /* 卡寬要用 `.mode-strip > .mode-card` 才蓋得掉第 265 行的原版規則
+         （那條寫 flex:0 0 auto + min-width:160px，特異性 0,2,0 比單一 .mode-card 高）。
+         原版是 emoji 圖示、內容很小，所以 auto 沒問題；換成縮圖之後
+         auto 會取圖片的原始寬度 1200px，卡片實測爆成 1230×879。
+         固定 160px。 */
+      .mode-strip > .mode-card { flex: 0 0 160px; min-width: 0; max-width: none; }
+      .mode-card { padding: 10px 10px 12px !important; }
+      .mode-thumb { border-radius: 8px; }
+      .mode-thumb img { padding: 4px; }
+      .mode-card h3 { padding: 8px 0 2px !important; font-size: 13.5px !important; }
+      .mode-card p  { padding: 0 !important; font-size: 12px !important; }
+    }
+
     /* 桌機五等分；窄螢幕沿用原本的橫向捲動 */
     @media (min-width: 769px) {
       .mode-strip { display: grid !important; grid-template-columns: repeat(5, 1fr); gap: 14px; overflow: visible !important; }
+    }
+
+    /* ── 首頁的兩行文案 ──
+       原本是一段長文，與設計理念區有 37 字完全重複；改成標語式的兩行，
+       重複問題也一併解決。字級比例依提供的示意圖：第二行約主標的 0.45、第三行約 0.32。 */
+    .hero-sub {
+      font-size: clamp(17px, 1.5vw, 22px);
+      line-height: 1.7;
+      letter-spacing: .1em;
+      color: #4f4a45;
+      font-weight: 400;
+      margin: 0;
+    }
+    .hero-sub2 {
+      font-size: clamp(13.5px, 1.05vw, 15.5px);
+      line-height: 1.9;
+      letter-spacing: .06em;
+      color: #6b6560;
+      font-weight: 300;
+      margin: .5rem 0 0;
     }
 
     /* 徽章的線性圖示 */
@@ -958,7 +1056,7 @@
     .hero-chips .chip { gap: .45rem !important; }
 
     /* =========================================================================
-       依使用者示意圖 1:1 校正主視覺（2026-08-13）
+       主視覺比例規格
        比例是從示意圖上量出來的，換算成畫面寬度的百分比：
          輪播總寬 82.1%／主圖 54.9%／單側露邊 11.7%／張間距 1.9%／露邊縮放 0.92
        原本用 Tailwind 的 max-w-6xl（固定 1152px），螢幕越寬主視覺佔比就越小，
@@ -1013,12 +1111,27 @@
        柔和該用在兩色的交界（那是遮罩的漸層帶），不是把手本身。 */
     .tone-handle {
       width: 2px; margin-left: -1px;
-      background: rgba(255,255,255,.9);
-      box-shadow: 0 0 0 1px rgba(30,26,22,.16);
+      background: #fff;          /* 純白、不透明 */
+      box-shadow: none;          /* 拿掉外圈的深色描邊（那就是看起來像「黑框」的東西）*/
     }
-    /* ⑦ 示意圖沒有「02 原色／01 淡色」這兩顆標籤。
-       標籤本身是我加的，不是原有內容；如果之後想要回來，把這行刪掉即可。 */
-    .tone-tag { display: none; }
+    /* 世代卡浮層在小框裡的密度。
+       圖框改 4:3 之後高度變矮：768px 只有 176px 高，而浮層原本需要 205px。
+       只差 30px，所以把內距 2rem→1rem、列距 10px→7px（省下 50px），
+       讓 375 起的所有寬度都塞得下，不必捲動。
+       ≥1024px 維持原本的寬鬆間距。 */
+    @media (max-width: 1279px) {
+      /* 2026-08-18 浮層加到 4 列（多了「作品尺寸」）之後重新校準。
+         最窄的是 768px 那格（圖框只有 235×176），列高 30px 才塞得下 4 列。
+         實測 375/390/430/768/1024/1280/1440/1920 八種寬度都不需要捲動。
+         ≥1280px 維持原本較寬鬆的列高 40px。 */
+      .spec-overlay { padding: .8rem; }
+      .spec-row { padding: 5px 0; }
+      .spec-overlay h3 { margin-bottom: .35rem !important; padding-bottom: .2rem !important; }
+    }
+
+    /* ⑦ 左下角 Gen1、右下角 Gen2。
+       世代順序由左到右，與遮罩方向一致：左邊是第一代、右邊是第二代。 */
+    .tone-tag { display: block; }
 
     /* =========================================================================
        設計理念（#about）依示意圖校正（2026-08-13）
@@ -1030,14 +1143,29 @@
        改成讓列高由左欄決定、右圖填滿該列（object-fit: cover 已在 .img-container img）。
        只套 ≥1024px（兩欄成立的斷點）；手機是單欄，height:100% 會塌掉，仍用 aspect-square。 */
     @media (min-width: 1024px) {
-      /* 超寬螢幕的上限，與首頁主視覺同一個數字。
-         沒有上限時 2560px 會讓兩欄各寬 1043px，右圖被裁成 1.81:1，裁掉太多。 */
-      #about > .grid { align-items: stretch; max-width: 1680px; margin-left: auto; margin-right: auto; }
+      /* 右圖固定 1:1，同時不讓它超過左欄 —— 這兩件事本來會打架，
+         解法是把格線總寬鎖在「正方形高度剛好等於左欄內容高度」的臨界點。
+
+         ⚠️ 這個數字跟左欄的文案長度綁在一起。文案改長改短，就要重新推導：
+            上限 = 左欄內容高度 × 2 + 欄距(64px)
+         目前左欄內容高實測 573px（2026-08-13 文案改短後），所以 573×2+64 = 1210。
+         （文案還是 3+4 行、內容高 599px 的時候，這個值是 1260。）
+
+         這個值與左欄文案長度綁在一起：文案改長改短之後要照上面的公式重新推導。 */
+      #about > .grid { align-items: stretch; max-width: 1210px; margin-left: auto; margin-right: auto; }
       #about .about-media {
-        aspect-ratio: auto;      /* 取消 aspect-square，否則高度會被寬度綁住 */
-        height: 100%;
+        aspect-ratio: 1 / 1;     /* 固定正方形，不再隨畫面寬度變形 */
+        height: auto;
+        align-self: start;       /* 不被 grid 的 stretch 撐高 */
         min-height: 0;
       }
+      /* 播放中改成 16:9 之後高度只有欄寬的 9/16（1440px 下約 322px），
+         而列高由左欄文字決定（約 573px），所以會在下方留一大塊空白。
+         align-self 從 start 改成 center，讓播放器在該列垂直置中。
+         不能用 stretch —— 那會讓 grid 給定高度、aspect-ratio 反推寬度而衝出欄寬。
+         手機是單欄，列高等於元素自身高度，start 與 center 沒有差別，所以只在這裡改。 */
+      #about .about-media.is-playing { align-self: center; }
+
       /* 關鍵：圖片改絕對定位，才不會用「寬度 × 原始比例」去把列高撐高。
          只有這樣列高才真的由左欄決定，右圖再填滿該列。 */
       #about .about-media > img,
@@ -1059,8 +1187,7 @@
     .feat-d { flex: 0 0 100%; font-size: 12px; line-height: 1.65; color: #6b6560; font-weight: 300; margin: 0; }
 
     /* 三顆色點的大小。
-       2026-08-13：第一版我從示意圖估成 20px，估過頭了（原本 48px）。
-       改用三個尺度無關的錨點反推示意圖的實際大小：
+       用三個尺度無關的錨點反推實際大小：
          圓點 ÷ 卡片高度 = 0.50 → 0.50 × 77 = 38px
          圓點 ÷ H2 字級  = 1.5  → 1.5  × 30 = 45px
          圓點 ÷ 左欄寬   = 0.077→ 0.077× 573 = 44px
@@ -1088,9 +1215,21 @@
     .media-play:hover .media-play-ico { transform: scale(1.05); }
     .media-play-label {
       font-size: 12.5px; letter-spacing: .12em; color: #fff; font-weight: 500;
-      background: rgba(20,17,14,.52); padding: 5px 13px; border-radius: 999px;
+      /* .52 時白字對比只有 4.02:1（需 4.5），提高到 .78 */
+      background: rgba(20,17,14,.78); padding: 5px 13px; border-radius: 999px;
     }
     .media-play:focus-visible { outline: 2px solid #5b6d5f; outline-offset: -4px; border-radius: inherit; }
+    /* 播放中把框改成 16:9：影片是 16:9，塞進接近正方形的框會上下各留一大條黑邊
+       （手機 328×328 的框裡影片只有 328×184，黑邊佔 44%）。 */
+    .about-media.is-playing {
+      aspect-ratio: 16 / 9 !important;
+      height: auto !important;
+      /* align-self 一定要改掉：grid 的 stretch 會給它一個確定的高度，
+         aspect-ratio 就用「高 × 16/9」反推寬度，實測在 1440px 變成 1066px 寬、
+         衝出 573px 的欄寬。改成 start 之後才是「寬度吃滿欄寬、高度由比例決定」。 */
+      align-self: start;
+      width: 100%;
+    }
     /* 播放中：影片鋪滿原本圖片的位置 */
     .about-media .media-frame {
       position: absolute; inset: 0; z-index: 4; width: 100%; height: 100%;
@@ -1102,7 +1241,7 @@
        hover 浮層一次只能看一邊，這張表把兩代並排。
        規格數值與浮層完全相同，只是換一種呈現方式。
        ─────────────────────────────────────────────── */
-    /* ── 「查看兩代詳細規格」的收合 ──
+    /* ── 「查看兩代完整規格」的收合 ──
        與上方兩張卡的 hover 浮層資訊重疊，所以平時收起。 */
     .spec-more { max-width: 820px; margin: 3.5rem auto 0; }
     .spec-more-btn {
@@ -1120,11 +1259,13 @@
     .spec-more-btn:focus-visible { outline: 2px solid #5b6d5f; outline-offset: 3px; }
     .spec-more-ico { width: 16px; height: 16px; transition: transform .22s var(--ease); }
     .spec-more[open] .spec-more-ico { transform: rotate(180deg); }
-    /* 文字隨展開狀態切換，兩種說法都寫在 data-* 上，改字不用動 JS */
-    .spec-more-txt::before { content: attr(data-closed); }
-    .spec-more[open] .spec-more-txt::before { content: attr(data-open); }
-    .spec-more-txt { font-size: 0; }            /* 隱藏原本的文字節點，只顯示 ::before */
-    .spec-more-txt::before { font-size: 13px; }
+    /* 兩段真實文字，用 display 切換。
+       原本用 font-size:0 + ::before content 的做法有兩個問題：
+       畫面上的字不是真實文字節點（頁內搜尋、選取都抓不到），
+       而且稽核工具會量到 font-size:0。 */
+    .spec-more-txt { font-size: 13px; }
+    .spec-more:not([open]) .lbl-open { display: none; }
+    .spec-more[open] .lbl-closed { display: none; }
     /* summary 自己置中 */
     .spec-more { text-align: center; }
     .spec-compare { text-align: left; }
@@ -1210,7 +1351,19 @@
 
   <nav class="fixed top-0 w-full z-50">
     <div class="flex justify-between items-center px-[8%]">
-      <div class="font-bauhaus tracking-wide text-3xl text-[#5b6d5f]">Painting Chair</div>
+      <div class="brand-wordmark text-[#5b6d5f]">
+          <!-- 商標改成 SVG 輪廓（2026-08-18）。
+               原本靠 font-family: Bauhaus 93，但那是 Windows 隨附字型，
+               Mac 與 iPhone 沒有 → 整個商標退回 Arial Black，品牌字消失。
+               這裡的路徑是直接從 Windows 隨附的 Bauhaus 93 字型檔（glyf 表）取出的真實輪廓
+               （不是描邊近似）；已把原本的 tracking-wide 0.025em 字距烙進字間距。
+               與真實字型渲染的比對：墨跡長寬比差 0.004%、像素 IoU 0.9959。
+               顏色吃 currentColor，所以由外層的 text-[#5b6d5f] 控制。 -->
+          <svg viewBox="0 0 6728.8 930.2" role="img" aria-label="Painting Chair" focusable="false">
+            <title>Painting Chair</title>
+            <path fill="currentColor" fill-rule="nonzero" d="M 230.47 473.63 L 230.47 298.83 Q 290.53 298.83 290.53 252.93 Q 290.53 210.94 244.63 210.94 Q 198.24 210.94 198.24 268.55 L 198.24 704.10 L 0.00 704.10 L 0.00 289.06 Q 0.00 224.61 12.94 183.35 Q 25.88 142.09 57.13 106.45 Q 92.29 66.89 145.02 43.95 Q 197.75 21.00 253.91 21.00 Q 355.47 21.00 424.56 89.36 Q 493.65 157.71 493.65 258.79 Q 493.65 356.93 431.64 417.97 Q 375.00 474.12 260.74 474.12 L 230.47 473.63 Z M 857.52 521.48 L 857.52 710.45 Q 835.06 714.36 816.50 714.36 Q 706.64 714.36 633.40 642.09 Q 560.16 569.82 560.16 460.94 Q 560.16 354.98 634.13 281.25 Q 708.11 207.52 814.06 207.52 Q 932.23 207.52 1000.34 276.61 Q 1068.46 345.70 1068.46 465.33 L 1068.46 704.10 L 885.84 704.10 L 885.84 478.52 Q 885.84 439.94 867.04 416.99 Q 848.24 394.04 816.50 394.04 Q 787.70 394.04 766.70 415.04 Q 745.70 436.04 745.70 464.84 Q 745.70 495.12 764.75 514.65 Q 783.79 534.18 813.09 534.18 Q 837.01 534.18 857.52 521.48 Z M 1382.52 217.29 L 1382.52 704.10 L 1199.90 704.10 L 1199.90 217.29 L 1382.52 217.29 Z M 1291.70 0.00 Q 1328.81 0.00 1355.91 26.12 Q 1383.01 52.25 1383.01 87.89 Q 1383.01 125.98 1357.37 150.39 Q 1331.74 174.80 1291.70 174.80 Q 1251.66 174.80 1226.03 150.39 Q 1200.39 125.98 1200.39 87.89 Q 1200.39 52.25 1227.49 26.12 Q 1254.59 0.00 1291.70 0.00 Z M 1949.02 704.10 L 1766.41 704.10 L 1766.41 429.20 Q 1766.41 387.21 1731.74 387.21 Q 1697.56 387.21 1697.56 429.20 L 1697.56 704.10 L 1514.94 704.10 L 1514.94 432.62 Q 1514.94 337.40 1577.93 272.22 Q 1640.92 207.03 1732.23 207.03 Q 1836.72 207.03 1899.71 282.71 Q 1949.02 341.80 1949.02 447.27 L 1949.02 704.10 Z M 2243.07 37.60 L 2243.07 224.12 L 2325.10 224.12 L 2325.10 416.99 L 2243.07 416.99 Q 2243.07 475.10 2261.38 497.07 Q 2279.69 519.04 2328.52 519.04 L 2328.52 710.94 Q 2314.36 711.43 2307.52 711.43 Q 2245.51 711.43 2190.58 682.62 Q 2135.64 653.81 2102.44 604.49 Q 2060.45 541.50 2060.45 437.50 L 2060.45 37.60 L 2243.07 37.60 Z M 2622.56 217.29 L 2622.56 704.10 L 2439.94 704.10 L 2439.94 217.29 L 2622.56 217.29 Z M 2531.74 0.00 Q 2568.85 0.00 2595.95 26.12 Q 2623.05 52.25 2623.05 87.89 Q 2623.05 125.98 2597.41 150.39 Q 2571.78 174.80 2531.74 174.80 Q 2491.70 174.80 2466.06 150.39 Q 2440.43 125.98 2440.43 87.89 Q 2440.43 52.25 2467.53 26.12 Q 2494.63 0.00 2531.74 0.00 Z M 3189.06 704.10 L 3006.45 704.10 L 3006.45 429.20 Q 3006.45 387.21 2971.78 387.21 Q 2937.60 387.21 2937.60 429.20 L 2937.60 704.10 L 2754.98 704.10 L 2754.98 432.62 Q 2754.98 337.40 2817.97 272.22 Q 2880.96 207.03 2972.27 207.03 Q 3076.76 207.03 3139.75 282.71 Q 3189.06 341.80 3189.06 447.27 L 3189.06 704.10 Z M 3580.27 503.42 L 3580.27 670.90 Q 3540.72 685.55 3504.59 685.55 Q 3416.21 685.55 3354.93 618.65 Q 3293.65 551.76 3293.65 455.08 Q 3293.65 350.59 3367.38 278.81 Q 3441.11 207.03 3548.54 207.03 Q 3605.66 207.03 3657.91 229.98 Q 3710.16 252.93 3739.94 291.50 Q 3789.75 355.47 3789.75 477.05 L 3789.75 637.21 Q 3789.75 767.58 3715.77 848.88 Q 3641.80 930.18 3523.14 930.18 Q 3487.01 930.18 3431.84 912.11 L 3431.84 746.09 Q 3467.48 765.63 3504.10 765.63 Q 3553.42 765.63 3580.27 733.15 Q 3607.13 700.68 3607.13 640.14 L 3607.13 457.03 Q 3607.13 380.37 3545.12 380.37 Q 3518.75 380.37 3498.97 400.63 Q 3479.20 420.90 3479.20 447.27 Q 3479.20 475.10 3498.00 493.65 Q 3516.80 512.21 3544.63 512.21 Q 3563.18 512.21 3580.27 503.42 Z M 4661.52 378.42 L 4869.04 383.79 Q 4848.54 544.92 4757.47 632.81 Q 4666.41 720.70 4519.92 720.70 Q 4371.00 720.70 4270.65 620.85 Q 4170.31 521.00 4170.31 373.05 Q 4170.31 224.12 4272.61 122.56 Q 4374.90 21.00 4524.80 21.00 Q 4672.27 21.00 4770.90 120.61 Q 4839.26 189.45 4867.58 312.50 L 4655.18 326.66 Q 4619.53 217.29 4519.92 217.29 Q 4456.45 217.29 4415.19 261.23 Q 4373.93 305.18 4373.93 373.05 Q 4373.93 438.48 4414.45 481.20 Q 4454.98 523.93 4516.99 523.93 Q 4579.98 523.93 4617.33 486.33 Q 4654.69 448.73 4661.52 378.42 Z M 5156.74 37.60 L 5156.74 241.21 Q 5203.13 207.52 5249.51 207.52 Q 5319.82 207.52 5361.08 258.30 Q 5402.34 309.08 5402.34 395.51 L 5402.34 704.10 L 5219.73 704.10 L 5219.73 446.78 Q 5219.73 415.53 5213.13 404.79 Q 5206.54 394.04 5187.50 394.04 Q 5156.74 394.04 5156.74 439.45 L 5156.74 704.10 L 4974.12 704.10 L 4974.12 37.60 L 5156.74 37.60 Z M 5804.30 521.48 L 5804.30 710.45 Q 5781.84 714.36 5763.28 714.36 Q 5653.42 714.36 5580.18 642.09 Q 5506.93 569.82 5506.93 460.94 Q 5506.93 354.98 5580.91 281.25 Q 5654.88 207.52 5760.84 207.52 Q 5879.00 207.52 5947.12 276.61 Q 6015.23 345.70 6015.23 465.33 L 6015.23 704.10 L 5832.62 704.10 L 5832.62 478.52 Q 5832.62 439.94 5813.82 416.99 Q 5795.02 394.04 5763.28 394.04 Q 5734.47 394.04 5713.48 415.04 Q 5692.48 436.04 5692.48 464.84 Q 5692.48 495.12 5711.52 514.65 Q 5730.57 534.18 5759.86 534.18 Q 5783.79 534.18 5804.30 521.48 Z M 6329.30 217.29 L 6329.30 704.10 L 6146.68 704.10 L 6146.68 217.29 L 6329.30 217.29 Z M 6238.48 0.00 Q 6275.59 0.00 6302.69 26.12 Q 6329.79 52.25 6329.79 87.89 Q 6329.79 125.98 6304.15 150.39 Q 6278.52 174.80 6238.48 174.80 Q 6198.44 174.80 6172.80 150.39 Q 6147.17 125.98 6147.17 87.89 Q 6147.17 52.25 6174.27 26.12 Q 6201.37 0.00 6238.48 0.00 Z M 6728.81 212.40 L 6728.81 407.71 Q 6709.77 396.97 6694.14 396.97 Q 6644.34 396.97 6644.34 473.14 L 6644.34 704.10 L 6461.72 704.10 L 6461.72 437.99 Q 6461.72 332.52 6519.34 269.78 Q 6576.95 207.03 6673.14 207.03 Q 6694.63 207.03 6728.81 212.40 Z"/>
+          </svg>
+        </div>
 
       <div class="space-x-6 lg:space-x-8 text-[12px] tracking-[0.2em] hidden md:flex font-medium text-stone-400">
         <a href="#hero" class="nav-link">首頁</a>
@@ -1220,7 +1373,7 @@
         <a href="#designers" class="nav-link">團隊與聯繫</a>
       </div>
 
-      <button id="menuBtn" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/70 soft-shadow" aria-label="Open menu" aria-expanded="false">
+      <button id="menuBtn" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/70 soft-shadow" aria-label="開啟選單" aria-expanded="false">
         <svg class="w-5 h-5 text-[#5b6d5f]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -1252,7 +1405,6 @@
        圓點換成縮圖與編號，JS 照樣運作。
        =================================================================== -->
   <!-- 主視覺：圖在上、文字置中在下。
-       2026-08-13 依使用者提供的參考圖恢復此排法（中途曾改成左文右圖的雙欄，已還原）。
        三張輪播、下方圓點、兩側露邊的細白箭頭（滑鼠靠近才顯現）。 -->
   <section id="hero" class="scroll-section min-h-screen flex flex-col justify-center items-center text-center px-8 pt-20">
     <div aria-hidden="true" class="play-dots hidden md:block" style="top:18%; left:10%;"></div>
@@ -1270,7 +1422,8 @@
 
             <div class="hero-slide is-active" data-index="0">
               <div class="img-container aspect-[16/9] rounded-custom soft-shadow bg-stone-200">
-                <img src="images/hero-01.jpg" alt="畫作椅情境展示：懸掛於牆面的幾何畫作" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <img src="images/hero-01.jpg" alt="畫作椅情境展示：懸掛於牆面的幾何畫作"
+                     onerror="this.style.display='none'; const ph=this.closest('.img-container')?.querySelector('.img-placeholder'); if(ph) ph.style.display='flex'">
                 <img class="tone-pale" src="images/hero-01-pale.jpg" alt="" aria-hidden="true" onerror="this.closest('.hero-slide')?.querySelector('.tone-slider')?.classList.add('is-unavailable'); this.remove()">
                 <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
                   <p>主視覺展示：平面畫作情境</p>
@@ -1280,32 +1433,30 @@
                      非當前那張會被停用，所以同時只有一個可以拖。 -->
                 <div class="tone-slider" aria-hidden="false">
                   <input class="tone-range" type="range" min="0" max="100" value="50" step="0.1"
-                         aria-label="第 1 張：拖動比較第二代原色與第一代淡色">
+                         aria-label="第 1 張：拖曳比較第一代溫潤淺色與第二代經典深色">
                   <span class="tone-handle" aria-hidden="true"><i></i></span>
-                  <span class="tone-tag tone-tag-l" aria-hidden="true">02 原色</span>
-                  <span class="tone-tag tone-tag-r" aria-hidden="true">01 淡色</span>
+                  <span class="tone-tag tone-tag-l" aria-hidden="true">Gen1</span>
+                  <span class="tone-tag tone-tag-r" aria-hidden="true">Gen2</span>
                 </div>
               </div>
             </div>
 
-            <!-- 輪播第 2 張（主圖）：本地圖優先，讀不到才退回 Google Drive 連結
-                 ⚠️ 該 Drive 檔未開公開分享，訪客實際看不到 → 請盡快將原圖放入 images/hero-02-family.jpg -->
+            <!-- 輪播第 2 張 -->
             <div class="hero-slide" data-index="1">
               <div class="img-container aspect-[16/9] rounded-custom soft-shadow bg-stone-200">
                 <img src="images/hero-02-family.jpg"
-                     data-fallback="https://lh3.googleusercontent.com/d/1mQLPKjWe46NcbnOUaPBjGCqmb31Ns5b5"
                      alt="親子互動圖：孩子與畫作椅的日常"
-                     onerror="if(this.dataset.fallback){this.src=this.dataset.fallback;this.removeAttribute('data-fallback');}else{this.style.display='none';this.nextElementSibling.style.display='flex';}">
+                     onerror="this.style.display='none'; const ph=this.closest('.img-container')?.querySelector('.img-placeholder'); if(ph) ph.style.display='flex'">
                 <img class="tone-pale" src="images/hero-02-family-pale.jpg" alt="" aria-hidden="true" onerror="this.closest('.hero-slide')?.querySelector('.tone-slider')?.classList.add('is-unavailable'); this.remove()">
                 <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
                   <p>主視覺展示：親子互動圖</p>
                 </div>
                 <div class="tone-slider" aria-hidden="false">
                   <input class="tone-range" type="range" min="0" max="100" value="50" step="0.1" disabled
-                         aria-label="第 2 張：拖動比較第二代原色與第一代淡色">
+                         aria-label="第 2 張：拖曳比較第一代溫潤淺色與第二代經典深色">
                   <span class="tone-handle" aria-hidden="true"><i></i></span>
-                  <span class="tone-tag tone-tag-l" aria-hidden="true">02 原色</span>
-                  <span class="tone-tag tone-tag-r" aria-hidden="true">01 淡色</span>
+                  <span class="tone-tag tone-tag-l" aria-hidden="true">Gen1</span>
+                  <span class="tone-tag tone-tag-r" aria-hidden="true">Gen2</span>
                 </div>
               </div>
             </div>
@@ -1313,17 +1464,18 @@
             <!-- 輪播第 3 張：圖片放 images/hero-03.jpg 即自動顯示 -->
             <div class="hero-slide" data-index="2">
               <div class="img-container aspect-[16/9] rounded-custom soft-shadow bg-stone-200">
-                <img src="images/hero-03.jpg" alt="畫作椅情境展示：構件組合而成的兒童椅" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <img src="images/hero-03.jpg" alt="畫作椅情境展示：構件組合而成的兒童椅"
+                     onerror="this.style.display='none'; const ph=this.closest('.img-container')?.querySelector('.img-placeholder'); if(ph) ph.style.display='flex'">
                 <img class="tone-pale" src="images/hero-03-pale.jpg" alt="" aria-hidden="true" onerror="this.closest('.hero-slide')?.querySelector('.tone-slider')?.classList.add('is-unavailable'); this.remove()">
                 <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
                   <p>主視覺展示：立體組合情境</p>
                 </div>
                 <div class="tone-slider" aria-hidden="false">
                   <input class="tone-range" type="range" min="0" max="100" value="50" step="0.1" disabled
-                         aria-label="第 3 張：拖動比較第二代原色與第一代淡色">
+                         aria-label="第 3 張：拖曳比較第一代溫潤淺色與第二代經典深色">
                   <span class="tone-handle" aria-hidden="true"><i></i></span>
-                  <span class="tone-tag tone-tag-l" aria-hidden="true">02 原色</span>
-                  <span class="tone-tag tone-tag-r" aria-hidden="true">01 淡色</span>
+                  <span class="tone-tag tone-tag-l" aria-hidden="true">Gen1</span>
+                  <span class="tone-tag tone-tag-r" aria-hidden="true">Gen2</span>
                 </div>
               </div>
             </div>
@@ -1345,13 +1497,11 @@
 
     <div class="max-w-2xl reveal">
       <h1 class="text-4xl md:text-5xl font-medium mb-4 tracking-wider text-gray-800">畫作椅</h1>
-      <p class="text-stone-500 font-light leading-loose text-lg prose-tight mx-auto">
-        懸掛時，是一幅蒙德里安式的幾何畫作；拆解後，化身隨孩子成長調整的兒童家具。
-        平面與立體之間，讓藝術走進日常。
-      </p>
+      <p class="hero-sub">藝術、教育與成長的演進</p>
+      <p class="hero-sub2">一幅畫，兩張椅——將蒙德里安的幾何美學轉化為可互動的兒童家具</p>
       <div class="mt-10 flex flex-wrap justify-center gap-4 -translate-y-4 hero-chips">
-        <span class="px-6 py-2 chip rounded-full text-[10px] tracking-widest text-stone-400 soft-shadow"><svg class="chip-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="12.5" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M7 7.5 5.5 2.5h9L13 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg> 第一代獲當代好設計獎</span>
-        <span class="px-6 py-2 chip rounded-full text-[10px] tracking-widest text-stone-400 soft-shadow"><svg class="chip-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M2.5 7.5 10 3l7.5 4.5M4.5 8v7M8 8v7M12 8v7M15.5 8v7M2.5 16.5h15" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> 第二代臺中區農業改良場展覽</span>
+        <span class="px-6 py-2 chip rounded-full text-[10px] tracking-widest text-stone-400 soft-shadow"><svg class="chip-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="12.5" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M7 7.5 5.5 2.5h9L13 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg> 第一代榮獲 2021 當代好設計獎</span>
+        <span class="px-6 py-2 chip rounded-full text-[10px] tracking-widest text-stone-400 soft-shadow"><svg class="chip-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M2.5 7.5 10 3l7.5 4.5M4.5 8v7M8 8v7M12 8v7M15.5 8v7M2.5 16.5h15" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> 第二代於臺中區農業改良場展出</span>
       </div>
 
       <a href="#about" class="scroll-cue" aria-label="往下查看">
@@ -1366,43 +1516,46 @@
   <section id="about" class="scroll-section section-padding bg-white">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
       <div class="space-y-8 reveal">
-        <span class="text-[10px] tracking-[0.4em] text-stone-300 font-bold uppercase">Design & Science</span>
-        <h2 class="text-3xl font-medium leading-snug">環境教育，在色彩與幾何間萌芽。</h2>
+        <span class="text-[10px] tracking-[0.4em] txt-faint font-bold uppercase">Design & Science</span>
+        <h2 class="text-3xl font-medium leading-snug">環境教育，在色彩與幾何間萌芽</h2>
         <div class="space-y-4 text-gray-600 leading-relaxed font-light prose-width">
           <p>
-            環境教育對兒童的潛移默化影響深遠。齊格 (Zieger, 1999) 研究發現，由大量直線、方塊與矩形組成的形式，能有效激發視覺皮質細胞，提升孩童的專注力與創意力。
+            環境教育對兒童具有潛移默化的影響。直線、方塊與矩形組成的幾何形式，能刺激視覺感知，培養孩童的專注力與創造力。
           </p>
           <p>
-            畫作椅將蒙德里安冷抽象畫作的幾何構圖與色彩配置，從平面轉化為立體——採用可回收再利用的樺木板材，質輕而耐用。懸掛於空間中，它是一幅畫；需要使用時，從畫中分解出構件，以顏色與幾何形體組合成一把兒童椅，讓孩子在動手的過程中，建立對形狀、色彩與邏輯的認知。
+            畫作椅將蒙德里安冷抽象畫作的幾何構圖與色彩配置，從平面轉化為立體。懸掛時，是一幅蒙德里安式的幾何畫作；拆解後，化身隨孩子成長調整的兒童家具。透過色彩與幾何形體的組合，讓孩子在動手操作中建立對形狀、色彩與邏輯的認知，讓藝術從平面走進日常。
           </p>
         </div>
 
         <!-- 核心特色四格。
              2026-08-13：標題四項維持原本（產品獨有的說法），說明改成短句以達到示意圖的密度。
              被縮短的具體規格沒有消失，都在「世代與規格」那一區：
-               1300×1030 mm、2 把兒童椅構件 → 該區開頭說明與規格對照表
+               2 把兒童椅構件               → 該區開頭說明與規格對照表
                椅面高度可調整               → 該區開頭說明
+               作品尺寸 1300×1030 mm        → 世代卡浮層與規格對照表
+                 （2026-08-18 從該區開頭說明移除：兩代尺寸已確認不同，
+                   開頭說明只寫一組數字會與對照表互相矛盾）
                構件可拆卸、組裝與替換        → 第二代的說明段落
              emoji 換成線性圖示，與 Hero 徽章、多功模式同一套語彙。 -->
         <div class="about-feats grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="feat chip rounded-2xl soft-shadow">
             <svg class="feat-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="2.4" y="3" width="15.2" height="9" rx="1.2" stroke="currentColor" stroke-width="1.4"/><path d="M5.4 17v-3.2h3.2V17M11.4 17v-3.2h3.2V17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-            <h4 class="feat-t">一畫兩椅</h4>
-            <p class="feat-d">一幅畫內含 2 把兒童椅構件</p>
+            <h3 class="feat-t">一畫兩椅</h3>
+            <p class="feat-d">一幅畫內含兩把兒童椅構件</p>
           </div>
           <div class="feat chip rounded-2xl soft-shadow">
             <svg class="feat-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="2.4" y="3.4" width="15.2" height="13.2" rx="1.2" stroke="currentColor" stroke-width="1.4"/><path d="M2.4 9.4h15.2M9.6 3.4v13.2" stroke="currentColor" stroke-width="1.4"/></svg>
-            <h4 class="feat-t">畫作恆完整</h4>
+            <h3 class="feat-t">畫作恆完整</h3>
             <p class="feat-d">取下椅子構件後，畫作依舊完整</p>
           </div>
           <div class="feat chip rounded-2xl soft-shadow">
             <svg class="feat-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 3.2v13.6M6.6 6.6 10 3.2l3.4 3.4M6.6 13.4 10 16.8l3.4-3.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.6 6.6h2.2M2.6 10h2.2M2.6 13.4h2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-            <h4 class="feat-t">隨成長調整</h4>
+            <h3 class="feat-t">隨成長調整</h3>
             <p class="feat-d">椅面高度隨孩子成長調整</p>
           </div>
           <div class="feat chip rounded-2xl soft-shadow">
             <svg class="feat-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="2.4" y="2.4" width="6.6" height="6.6" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="2.4" width="6.6" height="6.6" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="2.4" y="11" width="6.6" height="6.6" rx="1" stroke="currentColor" stroke-width="1.4"/><path d="M11 14.3h6.6M14.3 11v6.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-            <h4 class="feat-t">模組化設計</h4>
+            <h3 class="feat-t">模組化設計</h3>
             <p class="feat-d">構件可拆卸、組裝與替換</p>
           </div>
         </div>
@@ -1415,11 +1568,9 @@
         </div>
       </div>
 
-      <!-- ▼▼▼ 影片連結填在下面這一行的 data-video ▼▼▼
-           YouTube 貼網址列的連結即可（https://www.youtube.com/watch?v=xxxx 或 https://youtu.be/xxxx）；
-           自己的影片檔就放 images/ 裡再寫 images/intro.mp4。
-           留空的話播放鈕會自動隱藏，不會出現一顆點下去沒反應的按鈕。
-           影片長度變了就改下面那句「觀看 90 秒介紹影片」（目前這支實測 1:29）。 -->
+      <!-- 影片連結填在下一行的 data-video：YouTube 網址、或放進 images/ 的影片檔路徑。
+           留空時播放鍵會自動隱藏。換影片時記得同步改下方那句「觀看 90 秒介紹影片」。
+           詳細說明見 MAINTENANCE.md 的「介紹影片連結」。 -->
       <div class="img-container rounded-custom soft-shadow aspect-square bg-stone-100 reveal about-media"
            data-video="https://youtu.be/Ae7Tq3zgTFQ">
         <!-- 圖片放 images/about-painting-to-chair.jpg 即自動顯示 -->
@@ -1439,7 +1590,7 @@
 
   <section id="usage" class="scroll-section section-padding bg-stone-50">
     <div class="text-center mb-12 reveal">
-      <span class="text-[10px] tracking-[0.4em] text-stone-300 font-bold uppercase">Versatile Design</span>
+      <span class="text-[10px] tracking-[0.4em] txt-faint font-bold uppercase">Versatile Design</span>
       <h2 class="text-3xl font-medium mt-4">因地制宜，隨心而變</h2>
       <p class="text-sm text-stone-400 font-light mt-4 max-w-xl mx-auto leading-relaxed">
         同一幅畫的構件，平面與立體可自由切換——取下椅子後，畫作依然完整。
@@ -1448,8 +1599,8 @@
 
     <div class="max-w-4xl mx-auto mb-12 reveal">
       <div class="img-container aspect-[16/9] rounded-custom soft-shadow bg-white overflow-hidden border-8 border-white">
-        <div id="mode-img-loader" class="absolute inset-0 flex flex-col items-center justify-center text-stone-300 bg-stone-50">
-          <p class="text-xs tracking-widest">點擊下方卡片預覽功能</p>
+        <div id="mode-img-loader" class="absolute inset-0 flex flex-col items-center justify-center txt-quiet bg-stone-50">
+          <p class="text-xs tracking-widest">點選下方卡片預覽各種模式</p>
         </div>
       </div>
     </div>
@@ -1464,28 +1615,28 @@
       <div class="mode-strip">
         <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow active" role="button" tabindex="0" aria-pressed="true" onclick="switchMode(this, 'art', '藝術畫作')">
           <span class="mode-thumb" aria-hidden="true"><img src="images/mode-art-thumb.jpg" alt="" loading="lazy" onerror="if(this.dataset.fb){this.closest('.mode-thumb').classList.add('is-empty')}else{this.dataset.fb='1';this.closest('.mode-thumb').classList.add('is-cover');this.src='images/mode-art.jpg'}"></span>
-          <h4 class="font-bold mb-2">藝術畫作</h4>
+          <h3 class="font-bold mb-2">藝術畫作</h3>
           <p class="text-[10px] text-stone-400 font-light">懸掛牆面的幾何構圖</p>
         </div>
         <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" role="button" tabindex="0" aria-pressed="false" onclick="switchMode(this, 'chair', '兒童組合椅')">
           <span class="mode-thumb" aria-hidden="true"><img src="images/mode-chair-thumb.jpg" alt="" loading="lazy" onerror="if(this.dataset.fb){this.closest('.mode-thumb').classList.add('is-empty')}else{this.dataset.fb='1';this.closest('.mode-thumb').classList.add('is-cover');this.src='images/mode-chair.jpg'}"></span>
-          <h4 class="font-bold mb-2">兒童組合椅</h4>
+          <h3 class="font-bold mb-2">兒童組合椅</h3>
           <p class="text-[10px] text-stone-400 font-light">高度隨成長調整</p>
         </div>
         <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" role="button" tabindex="0" aria-pressed="false" onclick="switchMode(this, 'shelf', '置物架')">
           <span class="mode-thumb" aria-hidden="true"><img src="images/mode-shelf-thumb.jpg" alt="" loading="lazy" onerror="if(this.dataset.fb){this.closest('.mode-thumb').classList.add('is-empty')}else{this.dataset.fb='1';this.closest('.mode-thumb').classList.add('is-cover');this.src='images/mode-shelf.jpg'}"></span>
-          <h4 class="font-bold mb-2">置物架</h4>
+          <h3 class="font-bold mb-2">置物架</h3>
           <p class="text-[10px] text-stone-400 font-light">收納繪本與玩具</p>
         </div>
-        <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" role="button" tabindex="0" aria-pressed="false" onclick="switchMode(this, 'table', '邊几/茶几')">
+        <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" role="button" tabindex="0" aria-pressed="false" onclick="switchMode(this, 'table', '邊几／茶几')">
           <span class="mode-thumb" aria-hidden="true"><img src="images/mode-table-thumb.jpg" alt="" loading="lazy" onerror="if(this.dataset.fb){this.closest('.mode-thumb').classList.add('is-empty')}else{this.dataset.fb='1';this.closest('.mode-thumb').classList.add('is-cover');this.src='images/mode-table.jpg'}"></span>
-          <h4 class="font-bold mb-2">邊几/茶几</h4>
+          <h3 class="font-bold mb-2">邊几／茶几</h3>
           <p class="text-[10px] text-stone-400 font-light">客廳點心台</p>
         </div>
         <div class="mode-card bg-white p-6 rounded-2xl text-center soft-shadow" role="button" tabindex="0" aria-pressed="false" onclick="switchMode(this, 'console', '玄關桌')">
           <span class="mode-thumb" aria-hidden="true"><img src="images/mode-console-thumb.jpg" alt="" loading="lazy" onerror="if(this.dataset.fb){this.closest('.mode-thumb').classList.add('is-empty')}else{this.dataset.fb='1';this.closest('.mode-thumb').classList.add('is-cover');this.src='images/mode-console.jpg'}"></span>
-          <h4 class="font-bold mb-2">玄關桌</h4>
-          <p class="text-[10px] text-stone-400 font-light">入門端景</p>
+          <h3 class="font-bold mb-2">玄關桌</h3>
+          <p class="text-[10px] text-stone-400 font-light">入口端景</p>
         </div>
       </div>
     </div>
@@ -1493,70 +1644,68 @@
 
   <div id="series" class="scroll-section bg-white section-padding">
     <div class="text-center mb-16 reveal">
-      <span class="text-[10px] tracking-[0.4em] text-stone-300 font-bold uppercase">Evolution</span>
+      <span class="text-[10px] tracking-[0.4em] txt-faint font-bold uppercase">Evolution</span>
       <h2 class="text-3xl font-medium mt-4 text-gray-800">世代演進與產品規格</h2>
       <p class="text-sm text-stone-400 font-light mt-4 max-w-xl mx-auto leading-relaxed">
-        每幅畫（1300×1030 mm）皆內含兩把兒童椅構件，椅面高度可隨孩子成長調整。
+        每幅畫皆內含兩把兒童椅構件，椅面高度可隨孩子成長調整。
       </p>
       <!-- 桌機/觸控提示分開兩個 span，避免父層被 RWD 隱藏時把觸控提示一起藏掉 -->
-      <p class="text-xs text-stone-400 mt-2"><span class="hint-hover">滑鼠停在圖片上查看詳細規格</span><span class="tap-hint">點一下圖片可查看詳細規格</span></p>
+      <p class="text-xs text-stone-400 mt-2"><span class="hint-hover">滑鼠移到圖片上可查看重點規格</span><span class="tap-hint">點一下圖片可查看重點規格</span></p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 max-w-6xl mx-auto">
-      <div class="series-card group relative reveal bg-[#fafafa] p-8 rounded-custom soft-shadow flex flex-col items-center border-t-4 border-yellow-200 transition-all duration-500 hover:shadow-xl">
-        <div class="badge mb-6">AWARD WINNING</div>
+      <div class="series-card group relative reveal bg-[#fafafa] p-8 rounded-custom soft-shadow flex flex-col items-center border-t-4 border-[#f2d06b] transition-all duration-500 hover:shadow-xl">
+        <div class="badge mb-6">2021 當代好設計獎</div>
 
-        <div class="relative w-full aspect-square rounded-2xl mb-8 overflow-hidden bg-white img-container">
+        <div class="relative w-full aspect-[4/3] rounded-2xl mb-8 overflow-hidden bg-white img-container">
           <!-- 圖片放 images/gen1.jpg 即自動顯示 -->
           <img src="images/gen1.jpg" alt="第一代畫作椅：溫潤淺色（2021 當代好設計獎得獎作）" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
           <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
-            <p>第一代：溫潤淺色 (得獎作)</p>
+            <p>第一代：溫潤淺色（得獎作）</p>
           </div>
+          <!-- 浮層列 4 項：「兩代不同」的 3 項（材質／輔助結構／組裝方式）＋作品尺寸。
+               完整 7 項規格在下方「查看兩代完整規格」的對照表裡，這裡不重複。
+               2026-08-18：圖框改 4:3 之後浮層高度變矮，列距在 ≤1279px 收緊到 30px，
+               8 種寬度（375/390/430/768/1024/1280/1440/1920）實測都不需要捲動。 -->
           <div class="spec-overlay">
-            <h5 class="text-stone-400 text-[10px] tracking-widest mb-4 border-b pb-2 uppercase">1st Gen Specs</h5>
+            <h3 class="text-stone-400 text-[10px] tracking-widest mb-4 border-b pb-2 uppercase">1st Gen Specs</h3>
             <div class="spec-row"><span class="spec-label">主要材質</span><span class="spec-val">天然色樺木合板</span></div>
             <div class="spec-row"><span class="spec-label">輔助結構</span><span class="spec-val">鋁合金接件</span></div>
-            <div class="spec-row"><span class="spec-label">作品尺寸</span><span class="spec-val">1300 x 1030 mm</span></div>
-            <div class="spec-row"><span class="spec-label">構件內容</span><span class="spec-val">2 把兒童椅構件</span></div>
             <div class="spec-row"><span class="spec-label">組裝方式</span><span class="spec-val">傳統榫接結構</span></div>
-            <div class="spec-row"><span class="spec-label">適用年齡</span><span class="spec-val" style="color:#c2c2c2">確認後補上</span></div>
-            <div class="spec-row"><span class="spec-label">承重</span><span class="spec-val" style="color:#c2c2c2">量測後補上</span></div>
+            <div class="spec-row"><span class="spec-label">作品尺寸</span><span class="spec-val">1300×1030 mm</span></div>
           </div>
         </div>
 
         <div class="text-center space-y-4">
           <h3 class="text-xl font-bold text-[#5b6d5f]">1st Gen / 溫潤淺色</h3>
           <p class="text-sm text-stone-500 leading-relaxed font-medium text-[#5b6d5f]">
-            奶油色系搭配淺色樺木，降低居家壓迫感；傳統榫接工藝，體現 5R 永續原則。憑藉優雅教育美學榮獲 2021 當代好設計獎。
+            奶油色系搭配天然色樺木，降低居家壓迫感；傳統榫接工藝，體現 5R 永續原則。憑藉優雅教育美學榮獲 2021 當代好設計獎。
           </p>
         </div>
       </div>
 
-      <div class="series-card group relative reveal bg-[#fafafa] p-8 rounded-custom soft-shadow flex flex-col items-center border-t-4 border-red-400 transition-all duration-500 hover:shadow-xl">
-        <div class="badge mb-6" style="background:#3b628a">EXHIBITION VERSION</div>
+      <div class="series-card group relative reveal bg-[#fafafa] p-8 rounded-custom soft-shadow flex flex-col items-center border-t-4 border-[#d0202f] transition-all duration-500 hover:shadow-xl">
+        <div class="badge mb-6" style="background:#0b4fa2">最新版展覽中</div>
 
-        <div class="relative w-full aspect-square rounded-2xl mb-8 overflow-hidden bg-white img-container">
+        <div class="relative w-full aspect-[4/3] rounded-2xl mb-8 overflow-hidden bg-white img-container">
           <!-- 圖片放 images/gen2.jpg 即自動顯示 -->
           <img src="images/gen2.jpg" alt="第二代畫作椅：經典深色（臺中區農業改良場展覽作）" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
           <div class="img-placeholder hidden w-full h-full flex-col items-center justify-center">
-            <p>第二代：經典深色 (展覽作)</p>
+            <p>第二代：經典深色（展覽作）</p>
           </div>
           <div class="spec-overlay">
-            <h5 class="text-stone-400 text-[10px] tracking-widest mb-4 border-b pb-2 uppercase">2nd Gen Specs</h5>
+            <h3 class="text-stone-400 text-[10px] tracking-widest mb-4 border-b pb-2 uppercase">2nd Gen Specs</h3>
             <div class="spec-row"><span class="spec-label">主要材質</span><span class="spec-val">深釉色樺木合板</span></div>
             <div class="spec-row"><span class="spec-label">輔助結構</span><span class="spec-val">強化鋁合金結構件</span></div>
-            <div class="spec-row"><span class="spec-label">作品尺寸</span><span class="spec-val">1300 x 1030 mm</span></div>
-            <div class="spec-row"><span class="spec-label">構件內容</span><span class="spec-val">2 把兒童椅構件</span></div>
             <div class="spec-row"><span class="spec-label">組裝方式</span><span class="spec-val">易拆卸優化結構</span></div>
-            <div class="spec-row"><span class="spec-label">適用年齡</span><span class="spec-val" style="color:#c2c2c2">確認後補上</span></div>
-            <div class="spec-row"><span class="spec-label">承重</span><span class="spec-val" style="color:#c2c2c2">量測後補上</span></div>
+            <div class="spec-row"><span class="spec-label">作品尺寸</span><span class="spec-val">1300×1030 mm</span></div>
           </div>
         </div>
 
         <div class="text-center space-y-4">
-          <h3 class="text-xl font-bold text-[#3b628a]">2nd Gen / 經典深色</h3>
+          <h3 class="text-xl font-bold text-[#0b4fa2]">2nd Gen / 經典深色</h3>
           <p class="text-sm text-stone-500 leading-relaxed font-medium text-[#5b6d5f]">
-            回歸蒙德里安純粹色彩對比，提供極佳視覺激發；結構優化後，構件更易拆卸、組裝與替換。目前正於臺中區農業改良場展覽空間展出。
+            回歸蒙德里安純粹色彩對比，提供極佳的視覺刺激；結構優化後，構件更易拆卸、組裝與替換。目前正於臺中區農業改良場展覽空間展出。
           </p>
         </div>
       </div>
@@ -1572,7 +1721,8 @@
            展開後會停在 opacity:0 變成空白。 -->
     <details class="spec-more">
       <summary class="spec-more-btn">
-        <span class="spec-more-txt" data-open="收起詳細規格" data-closed="查看兩代詳細規格">查看兩代詳細規格</span>
+        <span class="spec-more-txt lbl-closed">查看兩代完整規格</span>
+        <span class="spec-more-txt lbl-open">收起完整規格</span>
         <svg class="spec-more-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5.5 8l4.5 4.5L14.5 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </summary>
       <div class="spec-compare">
@@ -1580,7 +1730,7 @@
           <span class="cmp-eyebrow">Side by Side</span>
           <h3 class="cmp-h3">兩代規格差異對照</h3>
           <p class="cmp-note">
-            尺寸與構件數量兩代完全相同，差別在<strong>材質色調、結構件與組裝方式</strong>。
+            構件內容兩代相同，差別在<strong>材質色調、結構件、組裝方式與作品尺寸</strong>。
           </p>
           <p class="cmp-legend"><i aria-hidden="true"></i>標紅線的項目代表兩代不同</p>
         </div>
@@ -1618,25 +1768,27 @@
             <span class="cmp-cell">傳統榫接結構</span>
             <span class="cmp-cell">易拆卸優化結構</span>
           </div>
-
-          <!-- 兩代相同的兩項 -->
-          <div class="cmp-row">
+          <!-- 作品尺寸：列在兩代差異群組，左右兩欄各自呈現 -->
+          <div class="cmp-row is-diff">
             <span class="cmp-cell cmp-item">作品尺寸</span>
-            <span class="cmp-cell cmp-both">1300 x 1030 mm<em class="cmp-tag">兩代相同</em></span>
+            <span class="cmp-cell">1300×1030 mm</span>
+            <span class="cmp-cell">1300×1030 mm</span>
           </div>
+
+          <!-- 兩代相同的一項 -->
           <div class="cmp-row">
             <span class="cmp-cell cmp-item">構件內容</span>
             <span class="cmp-cell cmp-both">2 把兒童椅構件<em class="cmp-tag">兩代相同</em></span>
           </div>
 
-          <!-- 尚未量測/確認的兩項，維持原本的「待補」狀態，不自行填數字 -->
+          <!-- 這兩項的數值以膠囊標籤呈現狀態 -->
           <div class="cmp-row">
             <span class="cmp-cell cmp-item">適用年齡</span>
-            <span class="cmp-cell cmp-both"><em class="cmp-pending">確認後補上</em></span>
+            <span class="cmp-cell cmp-both"><em class="cmp-pending">確認中</em></span>
           </div>
           <div class="cmp-row">
             <span class="cmp-cell cmp-item">承重</span>
-            <span class="cmp-cell cmp-both"><em class="cmp-pending">量測後補上</em></span>
+            <span class="cmp-cell cmp-both"><em class="cmp-pending">量測中</em></span>
           </div>
         </div>
       </div>
@@ -1646,7 +1798,7 @@
   <div id="designers" class="scroll-section">
     <section class="section-padding pb-10 bg-stone-50">
       <div class="text-center mb-16">
-        <span class="text-[10px] tracking-[0.4em] text-stone-300 font-bold uppercase">The Designers</span>
+        <span class="text-[10px] tracking-[0.4em] txt-faint font-bold uppercase">The Designers</span>
         <h2 class="text-3xl font-medium mt-4 text-gray-800">設計背後的雙手與巧思</h2>
       </div>
 
@@ -1690,16 +1842,16 @@
         <div class="flex flex-col items-center space-y-4">
           <a href="https://www.instagram.com/painting_chair?igsh=bTU1bDNubXNxd2U3" target="_blank" class="ig-button inline-flex items-center gap-3 px-10 py-4 chip rounded-full text-[#5b6d5f] font-medium tracking-widest text-sm soft-shadow">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-            <span>PAINTING_CHAIR</span>
+            <span>@painting_chair</span>
           </a>
-          <p class="text-[9px] text-stone-300 tracking-[0.4em] uppercase">Follow our journey on Instagram</p>
+          <p class="text-[9px] txt-faint tracking-[0.4em] uppercase ig-caption">Follow our journey on Instagram</p>
         </div>
       </div>
     </section>
   </div>
 
-  <footer class="py-16 text-center text-stone-300 text-[9px] tracking-[0.5em] uppercase">
-    © 2026 PAINTING CHAIR.
+  <footer class="py-16 text-center txt-faint text-[9px] tracking-[0.5em] uppercase">
+    © 2026 PAINTING CHAIR
   </footer>
 
   <script>
@@ -1799,6 +1951,18 @@
       };
     }
 
+    // 預覽區一開始只有一行提示字，桌機上是 1080×608 的死區；
+    // 而第一張卡片的 HTML 本來就標了 active／aria-pressed="true"，
+    // 等於「看起來已選取但預覽是空的」。載入後自動觸發第一張卡把兩者對上。
+    // switchMode 不含任何捲動行為（已確認），所以自動觸發不會讓頁面跳動。
+    (function initFirstMode(){
+      const first = document.querySelector('.mode-card');
+      if (!first) return;
+      const run = () => first.click();
+      if (document.readyState === 'complete') run();
+      else window.addEventListener('load', run);
+    })();
+
     // 模式卡片鍵盤支援（Enter / Space 觸發，配合 role="button" tabindex="0"）
     document.querySelectorAll('.mode-card').forEach(card => {
       card.addEventListener('keydown', (e) => {
@@ -1839,18 +2003,42 @@
       // --tone，所以拖任何一個，三張的色調位置都一致，切換 slide 不會跳掉。
       const ranges = [...document.querySelectorAll('.tone-range')];
       if(!vp || !ranges.length) return;
-      const REST = 62;               // 停在偏原色的位置：主視覺是第二代，淡色露一角當提示
+      // 停在 38%：左邊 38% 是第一代、右邊 62% 是第二代 —— 主視覺仍是第二代，第一代露一角當提示
+      const REST = 38;
+      // 分隔線掃過標籤就淡出它。用 offsetLeft/offsetWidth 實算，不用固定百分比門檻：
+      // 標籤寬度固定約 60px，容器寬度桌機 ~790px、手機 ~350px，同一個百分比意義差一倍。
+      const syncTags = (v) => {
+        document.querySelectorAll('.hero-slide .tone-slider').forEach(sl => {
+          const w = sl.clientWidth;
+          if (!w) return;                    // 版面還沒算出來（載入最初幾毫秒）
+          const divider = w * (Number(v) / 100);
+          const l = sl.querySelector('.tone-tag-l');
+          const r = sl.querySelector('.tone-tag-r');
+          if (l) l.classList.toggle('is-past', divider <= l.offsetLeft + l.offsetWidth);
+          if (r) r.classList.toggle('is-past', divider >= r.offsetLeft);
+        });
+      };
+      let lastTone = REST;
       const apply = (v) => {
+        lastTone = v;
         ranges.forEach(r => { r.value = String(v); });
         vp.style.setProperty('--tone', v + '%');
+        syncTags(v);
       };
+      // 換視窗寬度時容器寬度變了，門檻要重算
+      window.addEventListener('resize', () => syncTags(lastTone));
       ranges.forEach(r => {
         r.addEventListener('input', () => { vp.classList.remove('tone-animating'); apply(r.value); });
         r.addEventListener('change', () => apply(r.value));
       });
 
-      // 開場：先全原色，再滑到 REST。讓人一眼看到這條線會動、可以拖。
-      apply(100);
+      // 開場：先全部是第二代（原色），再往右滑到 REST，讓第一代從左邊露出來。
+      // 反轉遮罩後「全第二代」是 0 而不是 100。
+      apply(0);
+      // apply(0) 可能早於版面計算完成（clientWidth 還是 0，syncTags 會直接跳過），
+      // 所以下一格畫面再同步一次，並且等輪播複製出 clone 之後也補一次。
+      requestAnimationFrame(() => syncTags(lastTone));
+      window.addEventListener('load', () => syncTags(lastTone));
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (reduce) { apply(REST); return; }
       const start = () => {
@@ -2101,6 +2289,8 @@
         node.className = 'media-frame';
         box.appendChild(node);
         btn.hidden = true;
+        // 影片是 16:9，框原本接近正方形，不改比例會上下各留一大條黑邊
+        box.classList.add('is-playing');
       };
       btn.addEventListener('click', play);
     })();
