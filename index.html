@@ -1359,9 +1359,13 @@
       font-size: 10.5px; letter-spacing: .1em; color: #6b6560;
       background: #f4f1ec; border-radius: 999px; padding: 3px 9px; font-style: normal;
     }
+    /* 「確認中／量測中」的膠囊。
+       用色與一般次要文字同階（#6b6560，對比 ≥4.5:1）——這是資訊而非裝飾標籤，
+       讀者要靠它知道「這格規格還沒有」，不能低於 AA。
+       與一般數值的區別交給虛線邊框與底色，不靠顏色深淺承載。 */
     .cmp-pending {
-      font-size: 12.5px; color: #8f8880; font-style: normal;
-      background: #f7f5f1; border: 1px dashed #ddd6cc; border-radius: 999px; padding: 3px 11px;
+      font-size: 12.5px; color: #6b6560; font-style: normal;
+      background: #f7f5f1; border: 1px dashed #ccc4b8; border-radius: 999px; padding: 3px 11px;
     }
 
     /* 手機：項目名稱自己一列，兩代並排在下 */
@@ -1729,7 +1733,7 @@
             <div class="spec-row"><span class="spec-label">主要材質</span><span class="spec-val">深釉色樺木合板</span></div>
             <div class="spec-row"><span class="spec-label">輔助結構</span><span class="spec-val">強化鋁合金結構件</span></div>
             <div class="spec-row"><span class="spec-label">組裝方式</span><span class="spec-val">易拆卸優化結構</span></div>
-            <div class="spec-row"><span class="spec-label">作品尺寸</span><span class="spec-val">1300×1030 mm</span></div>
+            <div class="spec-row"><span class="spec-label">作品尺寸</span><span class="spec-val"><em class="cmp-pending">確認中</em></span></div>
           </div>
         </div>
 
