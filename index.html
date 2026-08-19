@@ -1292,6 +1292,37 @@
     }
     .cmp-legend i { width: 3px; height: 15px; background: #d0202f; border-radius: 1px; display: block; }
 
+    /* 安裝與安全：25 kg 的壁掛作品，掉落風險必須主動說明。
+       商品標示法第 7 條規定有危險性的商品應標示注意事項，這是義務而非選項。
+       刻意不寫具體五金型號與載重——那需要實測依據，寫了會變成對外的安裝背書。 */
+    .safety-note {
+      max-width: 820px; margin: 2.75rem auto 0; text-align: left;
+      background: #fbf9f5; border: 1px solid rgba(91,109,95,.22);
+      border-left: 3px solid #5b6d5f; border-radius: 12px;
+      padding: 1.35rem 1.5rem;
+    }
+    .safety-note h3 {
+      font-size: 14px; font-weight: 700; color: #5b6d5f;
+      letter-spacing: .06em; margin: 0 0 .2rem;
+    }
+    .safety-note .safety-weight {
+      font-size: 13px; color: #6b6560; margin: 0 0 .9rem; font-weight: 400;
+    }
+    .safety-note ul { margin: 0; padding: 0; list-style: none; }
+    .safety-note li {
+      font-size: 13px; line-height: 1.85; color: #6b6560;
+      padding-left: 1.05rem; position: relative;
+    }
+    .safety-note li + li { margin-top: .5rem; }
+    .safety-note li::before {
+      content: ''; position: absolute; left: 0; top: .72em;
+      width: 4px; height: 4px; border-radius: 50%; background: #5b6d5f; opacity: .55;
+    }
+    .safety-note b { color: #4a4a46; font-weight: 600; }
+    @media (max-width: 767px) {
+      .safety-note { margin-top: 2rem; padding: 1.1rem 1.15rem; border-radius: 10px; }
+    }
+
     .cmp-table {
       background: #fff; border: 1px solid #ece7e0; border-radius: 18px;
       overflow: hidden; box-shadow: 0 14px 40px -28px rgba(60, 50, 40, .28);
@@ -1802,6 +1833,19 @@
         </div>
       </div>
     </details>
+
+    <!-- 安裝與安全。只寫已確認為真的部分：實測總重量、牆面條件、成人安裝、
+         使用與維護提醒。刻意不列五金型號與載重數字（需實測依據）。 -->
+    <div class="safety-note reveal">
+      <h3>安裝與安全</h3>
+      <p class="safety-weight">懸掛時的總重量為 <b>25 kg</b>（第一代）／<b>22 kg</b>（第二代）。</p>
+      <ul>
+        <li><b>牆面</b>：需為能承受該重量的實心牆體（RC 或紅磚）。輕隔間牆（矽酸鈣板、石膏板）不建議直接懸掛，須先確認立柱位置或加背板補強。</li>
+        <li><b>安裝</b>：請由成人安裝，並使用符合牆面材質的固定配件。</li>
+        <li><b>使用</b>：孩子取放構件時建議有成人在旁。請勿讓孩子攀爬、拉吊或倚靠懸掛中的畫作。</li>
+        <li><b>維護</b>：建議每三個月檢查固定件是否鬆動，頻繁取放構件之後尤其要看。</li>
+      </ul>
+    </div>
   </div>
 
   <div id="designers" class="scroll-section">
