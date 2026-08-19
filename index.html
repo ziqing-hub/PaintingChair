@@ -104,6 +104,15 @@
       transition: width var(--dur-med) var(--ease-out);
     }
 
+    /* 手機選單的點擊目標：原本只有 311×22 px，低於 WCAG 2.5.8 AA 的 24×24 CSS px。
+       用 padding 把可點區域撐到 ≥24px，而不是只放大字——字級已到 13px，
+       再放大會擠壓選單的節奏。桌機導覽列不受影響（那裡是水平排列、面積本來就夠）。 */
+    .mobile-menu .nav-link {
+      display: block;
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
+
     .nav-link.nav-active {
       color: var(--brand-green) !important;
       font-weight: 700;
@@ -746,7 +755,12 @@
        ---------------------------------------------------------------------- */
     :root {
       --tone-faint: #d6d3d1;
-      --tone-nav-idle: #a8a29e;
+      /* 2026-08-18 從 #a8a29e（2.52:1）調到 #797369（4.70:1，達 WCAG AA 4.5:1）。
+         理由與眉標不同：導覽項是功能性控制項，看不清就無法導覽，而且沒有替代方案；
+         眉標則有同義的中文標題緊接在下一行，所以維持淡色。
+         選中項的區別不只靠深淺——另有品牌綠 #5b6d5f、粗體 700、底線三層，
+         所以未選中項變深之後層次仍然成立（已實測比對）。 */
+      --tone-nav-idle: #797369;
     }
 
     /* 語意化類名，取代原本借用的 Tailwind text-stone-300。
@@ -1390,7 +1404,7 @@
           </svg>
         </div>
 
-      <div class="space-x-6 lg:space-x-8 text-[12px] tracking-[0.2em] hidden md:flex font-medium text-stone-400">
+      <div class="space-x-6 lg:space-x-8 text-[13px] tracking-[0.2em] hidden md:flex font-medium text-stone-400">
         <a href="#hero" class="nav-link">首頁</a>
         <a href="#about" class="nav-link">設計理念</a>
         <a href="#usage" class="nav-link">多功模式</a>
@@ -1409,7 +1423,7 @@
 
     <div id="mobileMenu" class="mobile-menu md:hidden">
       <div class="bg-white/80 rounded-2xl soft-shadow px-5 py-4">
-        <div class="grid gap-3 text-[12px] tracking-[0.2em] font-medium text-stone-400">
+        <div class="grid gap-3 text-[13px] tracking-[0.2em] font-medium text-stone-400">
           <a href="#hero" class="nav-link">首頁</a>
           <a href="#about" class="nav-link">設計理念</a>
           <a href="#usage" class="nav-link">多功模式</a>
