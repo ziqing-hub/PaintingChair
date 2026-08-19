@@ -16,7 +16,7 @@
 
 ⚠️ **第 3 步只讓你自己電腦上的檔案生效，線上網站還是舊的。**
 要讓真正的網站更新，還要上傳到 GitHub——做法見
-[../README.md 的「🚀 更新網站」章節](../README.md#-更新網站自己改完之後怎麼上線)。
+[../MAINTENANCE.md 的「讓改動上線」](../MAINTENANCE.md#讓改動上線)。
 
 不需要改任何程式碼。唯一需要動程式的是**介紹影片的連結**（見下方「介紹影片」）。
 
@@ -198,8 +198,8 @@
 
 **放上網站**：把 `images/` 裡改動的檔案上傳到 GitHub。
 換圖片建議用 **GitHub Desktop**（一次換好幾張比較方便），
-逐步做法寫在上一層的 [../README.md 的「🚀 更新網站」章節](../README.md#-更新網站自己改完之後怎麼上線)——
-從安裝、按哪顆按鈕、到改壞了怎麼還原都有寫。
+逐步做法寫在 [../MAINTENANCE.md 的「方法 B：GitHub Desktop」](../MAINTENANCE.md#方法-bgithub-desktop適合換圖片或一次改好幾個檔案)——
+從安裝、按哪顆按鈕、到[改壞了怎麼還原](../MAINTENANCE.md#改壞了怎麼還原)都有寫。
 
 上傳後 GitHub Pages 通常一到兩分鐘生效，網址是 `https://ziqing-hub.github.io/PaintingChair/`。
 
