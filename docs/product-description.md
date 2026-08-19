@@ -12,7 +12,7 @@
 | 作品名稱（英） | Painting Chair |
 | 主要材質 | 可回收再利用樺木合板、鋁合金結構件 |
 | 整幅畫尺寸 | 1300 × 1030 mm |
-| 單幅構件 | 內含 **2 把**兒童椅構件 |
+| 單幅構件 | 小／中／大三種尺寸的椅構件；中椅與大椅共用零件，同時可組出兩把（小＋中 或 小＋大） |
 | 獎項 | 2021 當代好設計獎（第一代） |
 | 展覽 | 臺中區農業改良場展覽空間（第二代） |
 | Instagram | [@painting_chair](https://www.instagram.com/painting_chair) |
@@ -27,7 +27,7 @@
 3. **永續材質** — 可回收再利用的樺木板材，質輕耐用（5R 永續原則）
 4. **平面↔立體雙形態** — 懸掛時是畫、拆解後是兒童椅
 5. **成長性** — 椅子高度、座位可隨兒童成長調整
-6. **一畫二椅** — 一幅畫內含 2 把椅子的構件
+6. **一畫二椅** — 一幅畫含小／中／大三種尺寸的椅構件，同時可組出兩把
 7. **畫作完整性** — 取下構件後，原畫作依舊完整存在
 8. **模組化** — 任何構件皆可輕易拆卸、組裝與替換
 9. **多功能** — 畫作、椅子、置物架、茶几、玄關桌，因地制宜
@@ -42,11 +42,11 @@
 
 本設計蒙德里安的冷抽象畫作幾何構圖與色彩配置的平面，轉化為立體，採用可回收再利用的樺木板材，質輕耐用，平面時懸掛於空間中是一幅畫，需要使用時可以從畫中分解出構件，運用顏色與幾何形體組合成一把兒童椅。
 
-考量兒童的成長性，椅子的高度，座位可隨兒童成長而調整，一幅畫中具有 2 把椅子的構件，取下構件時，原本的畫作依舊完整存在，且畫作中任何構件都可以輕易地拆卸、組裝與替換。平面與立體的組合可因地制宜調整，可作為畫作、椅子、置物架、茶几、玄關桌等。
+考量兒童的成長性，椅子的高度，座位可隨兒童成長而調整，一幅畫中具有小、中、大三種尺寸的椅構件，同時可組出兩把，取下構件時，原本的畫作依舊完整存在，且畫作中任何構件都可以輕易地拆卸、組裝與替換。平面與立體的組合可因地制宜調整，可作為畫作、椅子、置物架、茶几、玄關桌等。
 
-### English（投件原文）
+### English（直譯版）
 
-Environmental education has a great impact on children. Zieger (1999) found that a new form composed of a large number of straight lines, squares and rectangles can excite the cells in the visual cortex and increase children's concentration and creativity. In this design, Mondrian's cold abstract paintings are designed with geometric composition and color configuration planes, which are transformed into three-dimensional, using recyclable birch wood panels, which are light and durable. When the plane is suspended in the space, it is a painting. The components are decomposed in the painting, and colors and geometric shapes are combined to form a children's chair. Considering the child's growth, the height of the chair and the seat can be adjusted as the child grows. There are two chair components in a painting. When the components are removed, the original painting still exists intact, and any components in the painting can be easily adjusted. Disassembly, assembly and replacement. The combination of plane and three-dimensional can be adjusted according to local conditions, and can be used as paintings, chairs, shelves, coffee tables, console tables, etc.
+Environmental education has a great impact on children. Zieger (1999) found that a new form composed of a large number of straight lines, squares and rectangles can excite the cells in the visual cortex and increase children's concentration and creativity. In this design, Mondrian's cold abstract paintings are designed with geometric composition and color configuration planes, which are transformed into three-dimensional, using recyclable birch wood panels, which are light and durable. When the plane is suspended in the space, it is a painting. The components are decomposed in the painting, and colors and geometric shapes are combined to form a children's chair. Considering the child's growth, the height of the chair and the seat can be adjusted as the child grows. A single painting holds components for three chair sizes — small, medium, and large — with the medium and large sharing parts, so two chairs can be assembled at any one time. When the components are removed, the original painting still exists intact, and any components in the painting can be easily adjusted. Disassembly, assembly and replacement. The combination of plane and three-dimensional can be adjusted according to local conditions, and can be used as paintings, chairs, shelves, coffee tables, console tables, etc.
 
 ---
 
@@ -56,9 +56,9 @@ Environmental education has a great impact on children. Zieger (1999) found that
 
 本設計蒙德里安的冷抽象畫作幾何構圖與色彩配置，轉為立體，藉可回收再利用的樺木板材，質輕耐用，平面時懸掛於空間成一幅畫，需使用時可從畫中分解出構件，運用顏色與幾何形體組成兒童椅。
 
-考量兒童的成長性，椅子高度、座位可隨兒童成長而調整，一幅畫中具有 2 把椅子的構件，取下構件時，原畫作依舊完整，且畫作中任何構件都可輕易拆卸、組裝與替換。平面與立體的組合可因地制宜調整，可作為畫作、椅子、置物架、茶几、玄關桌等。
+考量兒童的成長性，椅子高度、座位可隨兒童成長而調整，一幅畫中具有小、中、大三種尺寸的椅構件，同時可組出兩把，取下構件時，原畫作依舊完整，且畫作中任何構件都可輕易拆卸、組裝與替換。平面與立體的組合可因地制宜調整，可作為畫作、椅子、置物架、茶几、玄關桌等。
 
-### English（投件原文）
+### English（直譯版）
 
 In this design, Mondrian's cold abstract paintings are designed with geometric composition and color configuration planes. When the plane is suspended in the space, it is a painting. The components are decomposed in the painting, and colors and geometric shapes are combined to form a children's chair. The painting can be easily adjusted. Disassembly, assembly and replacement. The combination of plane and three-dimensional can be adjusted according to local conditions, and can be used.
 
@@ -70,7 +70,7 @@ In this design, Mondrian's cold abstract paintings are designed with geometric c
 
 本設計蒙德里安的冷抽象畫幾何構圖與色彩配置，轉為立體，藉可回收再利用的樺木板材，質輕耐用，平面時懸掛於空間成一幅畫，需用時可從畫中分解出構件，運用顏色與幾何形體組成兒童椅。
 
-考量兒童的成長性，椅子高度、座位可隨兒童成長而調整，一幅畫中具有 2 把椅子的構件，取下構件時，原畫作依舊完整，且畫作中任何構件都可輕易拆卸、組裝與替換。平面與立體的組合可因地制宜調整，可作為畫作、椅子、置物架、茶几、玄關桌等。
+考量兒童的成長性，椅子高度、座位可隨兒童成長而調整，一幅畫中具有小、中、大三種尺寸的椅構件，同時可組出兩把，取下構件時，原畫作依舊完整，且畫作中任何構件都可輕易拆卸、組裝與替換。平面與立體的組合可因地制宜調整，可作為畫作、椅子、置物架、茶几、玄關桌等。
 
 ---
 
@@ -83,4 +83,4 @@ Environmental education shapes children in subtle yet profound ways: composition
 
 Painting Chair translates the geometric composition and color palette of Piet Mondrian's abstract paintings from plane into volume. Crafted from recyclable birch plywood — light yet durable — it hangs on the wall as a painting; when needed, components detach from the frame and, guided by color and geometry, assemble into a children's chair.
 
-Designed to grow with the child, both the seat and overall height are adjustable. Each painting holds the components of two chairs, and the artwork remains visually complete even after they are removed; every component can be easily disassembled, reassembled, or replaced. This interplay of plane and volume adapts to any setting — as a painting, a chair, a shelf, a coffee table, or a console table.
+Designed to grow with the child, both the seat and overall height are adjustable. Each painting holds components for three chair sizes — small, medium, and large — with the medium and large sharing parts, so two chairs can stand at any one time. The artwork remains visually complete even after they are removed; every component can be easily disassembled, reassembled, or replaced. This interplay of plane and volume adapts to any setting — as a painting, a chair, a shelf, a coffee table, or a console table.
