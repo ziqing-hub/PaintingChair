@@ -2133,7 +2133,12 @@
       let lastTone = REST;
       const apply = (v) => {
         lastTone = v;
-        ranges.forEach(r => { r.value = String(v); });
+        // 每次都重新查，而不是只用初始化時抓到的那 3 個真張。
+        // 輪播的複製格是在這支程式跑完之後才產生的，只同步 ranges 會讓
+        // 複製格的 range 停在被複製當下的值（實測：真張 38、複製格 0）。
+        // 畫面本身吃 .hero-viewport 上的 --tone 所以看不出來，
+        // 但螢幕閱讀器會讀到錯的值，而且任何日後讀取 range.value 的程式都會拿到舊值。
+        document.querySelectorAll('.tone-range').forEach(r => { r.value = String(v); });
         vp.style.setProperty('--tone', v + '%');
         syncTags(v);
       };
@@ -2153,13 +2158,39 @@
       window.addEventListener('load', () => syncTags(lastTone));
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (reduce) { apply(REST); return; }
+
+      // 使用者一旦動過滑桿，開場動畫就不該再覆蓋他設的值。
+      // 原本 start() 無條件 apply(REST)，所以在動畫觸發前就拖好的設定會被改掉。
+      let userTouched = false;
+      document.addEventListener('pointerdown', (e) => {
+        if (e.target.closest?.('.tone-range')) userTouched = true;
+      }, { capture: true, passive: true });
+      ranges.forEach(r => r.addEventListener('input', () => { userTouched = true; }));
+
       const start = () => {
+        if (userTouched) return;                 // 尊重使用者已經設好的位置
         vp.classList.add('tone-animating');
         apply(REST);
         setTimeout(() => vp.classList.remove('tone-animating'), 1400);
       };
-      if (document.readyState === 'complete') setTimeout(start, 520);
-      else window.addEventListener('load', () => setTimeout(start, 520));
+      // 原本等 window.load 才啟動，但 load 要等「全部 20 張圖 ＋ Tailwind CDN」，
+      // 實測本機就要約 2 秒，網路慢時更久。這段時間 --tone 停在 0%，
+      // 畫面是「完全展開的第二代」——看起來像 bug 而不是還沒開始的動畫。
+      // 改成只等主視覺自己那兩張圖（原色＋淡色）解碼完，並設 3 秒上限保底。
+      const heroReady = () => {
+        const imgs = [...document.querySelectorAll('.hero-slide:not([data-clone]) img')]
+          .filter(im => im.getAttribute('src'));
+        const pending = imgs.filter(im => !im.complete);
+        if (!pending.length) return Promise.resolve();
+        return Promise.race([
+          Promise.all(pending.map(im => new Promise(res => {
+            im.addEventListener('load', res, { once: true });
+            im.addEventListener('error', res, { once: true });
+          }))),
+          new Promise(res => setTimeout(res, 3000)),   // 保底：不讓壞圖卡住開場
+        ]);
+      };
+      heroReady().then(() => setTimeout(start, 260));
     })();
 
     // Hero carousel（循環：左右都有露邊，滑到最後一張還能繼續往右回到第一張）
