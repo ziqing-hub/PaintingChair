@@ -938,6 +938,15 @@
        仍會「吞掉點擊而不轉發」，所以要再加 pointer-events: none，
        露邊那張的點擊才傳得到 .hero-slide 上。 */
     .hero-slide:not(.is-active) .tone-range { pointer-events: none; }
+    /* 點露邊那張切換之後的保護窗。
+       觸控的事件順序是：pointerdown → pointerup →（瀏覽器「合成」）mousedown → click。
+       切換是在 pointerup 就做掉的，所以合成的 mousedown 到達時，新當前張的滑桿
+       已經變成可操作 —— 而它是 inset:0 蓋滿整張圖的 <input type=range>，
+       會依點擊 X 座標設值。點右邊邊緣＝落在新那張的「左緣」＝值趨近 0
+       ＝ --tone 0% ＝ 完全展開的第二代。實測 100% 重現。
+       只有觸控會這樣（滑鼠沒有合成事件），所以桌機看不到這個問題。
+       用保護窗而不是 preventDefault：後者要看瀏覽器對 pointerup 的實作，不可靠。 */
+    .hero-viewport.tap-guard .tone-range { pointer-events: none !important; }
     /* 露邊的那張可以點來切換——手機沒有左右箭頭，只靠下方圓點太難用 */
     .hero-slide:not(.is-active) { cursor: pointer; }
     .tone-range {
@@ -2358,11 +2367,17 @@
         const s = e.target.closest?.('.hero-slide');
         tapCell = s ? cells.indexOf(s) : -1;
       }, { passive: true });
+      let tapGuardTimer = null;
       viewport.addEventListener('pointerup', (e) => {
         if (tapCell < 0 || tapCell === cell) return;             // 沒點到、或點的就是當前張
         if (Math.hypot(e.clientX - tapX, e.clientY - tapY) > 10) return;  // 位移過大＝滑動，不是輕點
         const s = e.target.closest?.('.hero-slide');
         if (!s || cells.indexOf(s) !== tapCell) return;          // 按下與放開不在同一張
+        // 先上保護窗，再切換：擋掉這次觸控後續合成的 mousedown，
+        // 否則它會落在新當前張的滑桿上、把色調改成近乎 0（見上方 CSS 註解）。
+        viewport.classList.add('tap-guard');
+        clearTimeout(tapGuardTimer);
+        tapGuardTimer = setTimeout(() => viewport.classList.remove('tap-guard'), 450);
         goTo(tapCell);
       }, { passive: true });
 
