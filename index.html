@@ -2154,7 +2154,16 @@
       // 換視窗寬度時容器寬度變了，門檻要重算
       window.addEventListener('resize', () => syncTags(lastTone));
       ranges.forEach(r => {
-        r.addEventListener('input', () => { vp.classList.remove('tone-animating'); apply(r.value); });
+        r.addEventListener('input', () => {
+          // 移除 class 與設定新值若在同一個 tick，樣式重算會被批次處理，
+          // 開場動畫的 transition 仍會生效 —— 使用者在開場那 ~2 秒內拖動時，
+          // 會變成「平滑animate到目標值」而不是即時跟手（實測讀到 27.39% 這種中間值）。
+          // 中間插一次強制 reflow，讓 transition 先真正解除。
+          // （同樣的手法在輪播的 normalize() 也用過：void track.offsetWidth）
+          vp.classList.remove('tone-animating');
+          void vp.offsetWidth;
+          apply(r.value);
+        });
         r.addEventListener('change', () => apply(r.value));
       });
 
