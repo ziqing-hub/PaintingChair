@@ -72,8 +72,13 @@
 
     /* 商標。已改用 SVG 輪廓，不再依賴系統安裝 Bauhaus 93。
        高度 27.9px = 原本 30px 字級時的墨跡高度，所以視覺尺寸不變。 */
+    /* 商標同時是「回首頁」的連結（各大品牌站的慣例）。
+       用 <a> 而不是 JS：鍵盤 Tab 到得了、可以中鍵開新分頁、右鍵也有選單。 */
     .brand-wordmark { display: flex; align-items: center; }
     .brand-wordmark svg { height: 27.9px; width: auto; display: block; }
+    a.brand-wordmark { text-decoration: none; transition: opacity var(--dur-fast) var(--ease-out); }
+    a.brand-wordmark:hover { opacity: .72; }
+    a.brand-wordmark:focus-visible { outline: 2px solid #5b6d5f; outline-offset: 6px; border-radius: 4px; }
 
     .section-padding { padding: clamp(72px, 8vw, 120px) clamp(18px, 8%, 88px); }
     .rounded-custom { border-radius: 32px; }
@@ -901,6 +906,12 @@
     /* 只有當前那張顯示把手與標籤，露邊的兩張不要跳出來干擾 */
     .hero-slide .tone-slider { opacity: 0; transition: opacity .32s var(--ease); }
     .hero-slide.is-active .tone-slider { opacity: 1; }
+    /* 非當前張：滑桿不可操作。setActive() 已把它設成 disabled，但 disabled 的 input
+       仍會「吞掉點擊而不轉發」，所以要再加 pointer-events: none，
+       露邊那張的點擊才傳得到 .hero-slide 上。 */
+    .hero-slide:not(.is-active) .tone-range { pointer-events: none; }
+    /* 露邊的那張可以點來切換——手機沒有左右箭頭，只靠下方圓點太難用 */
+    .hero-slide:not(.is-active) { cursor: pointer; }
     .tone-range {
       position: absolute; inset: 0; width: 100%; height: 100%;
       opacity: 0; margin: 0; cursor: ew-resize; pointer-events: auto;
@@ -1395,7 +1406,7 @@
 
   <nav class="fixed top-0 w-full z-50">
     <div class="flex justify-between items-center px-[8%]">
-      <div class="brand-wordmark text-[#5b6d5f]">
+      <a href="#hero" class="brand-wordmark text-[#5b6d5f]" aria-label="畫作椅 Painting Chair — 回到首頁">
           <!-- 商標改成 SVG 輪廓（2026-08-18）。
                原本靠 font-family: Bauhaus 93，但那是 Windows 隨附字型，
                Mac 與 iPhone 沒有 → 整個商標退回 Arial Black，品牌字消失。
@@ -1403,11 +1414,12 @@
                （不是描邊近似）；已把原本的 tracking-wide 0.025em 字距烙進字間距。
                與真實字型渲染的比對：墨跡長寬比差 0.004%、像素 IoU 0.9959。
                顏色吃 currentColor，所以由外層的 text-[#5b6d5f] 控制。 -->
-          <svg viewBox="0 0 6728.8 930.2" role="img" aria-label="Painting Chair" focusable="false">
-            <title>Painting Chair</title>
+          <!-- 無障礙名稱由外層的 <a aria-label> 提供，這裡設 aria-hidden 避免讀兩次。
+               移除 <title> 也順便去掉滑鼠停留時那個突兀的原生提示框。 -->
+          <svg viewBox="0 0 6728.8 930.2" aria-hidden="true" focusable="false">
             <path fill="currentColor" fill-rule="nonzero" d="M 230.47 473.63 L 230.47 298.83 Q 290.53 298.83 290.53 252.93 Q 290.53 210.94 244.63 210.94 Q 198.24 210.94 198.24 268.55 L 198.24 704.10 L 0.00 704.10 L 0.00 289.06 Q 0.00 224.61 12.94 183.35 Q 25.88 142.09 57.13 106.45 Q 92.29 66.89 145.02 43.95 Q 197.75 21.00 253.91 21.00 Q 355.47 21.00 424.56 89.36 Q 493.65 157.71 493.65 258.79 Q 493.65 356.93 431.64 417.97 Q 375.00 474.12 260.74 474.12 L 230.47 473.63 Z M 857.52 521.48 L 857.52 710.45 Q 835.06 714.36 816.50 714.36 Q 706.64 714.36 633.40 642.09 Q 560.16 569.82 560.16 460.94 Q 560.16 354.98 634.13 281.25 Q 708.11 207.52 814.06 207.52 Q 932.23 207.52 1000.34 276.61 Q 1068.46 345.70 1068.46 465.33 L 1068.46 704.10 L 885.84 704.10 L 885.84 478.52 Q 885.84 439.94 867.04 416.99 Q 848.24 394.04 816.50 394.04 Q 787.70 394.04 766.70 415.04 Q 745.70 436.04 745.70 464.84 Q 745.70 495.12 764.75 514.65 Q 783.79 534.18 813.09 534.18 Q 837.01 534.18 857.52 521.48 Z M 1382.52 217.29 L 1382.52 704.10 L 1199.90 704.10 L 1199.90 217.29 L 1382.52 217.29 Z M 1291.70 0.00 Q 1328.81 0.00 1355.91 26.12 Q 1383.01 52.25 1383.01 87.89 Q 1383.01 125.98 1357.37 150.39 Q 1331.74 174.80 1291.70 174.80 Q 1251.66 174.80 1226.03 150.39 Q 1200.39 125.98 1200.39 87.89 Q 1200.39 52.25 1227.49 26.12 Q 1254.59 0.00 1291.70 0.00 Z M 1949.02 704.10 L 1766.41 704.10 L 1766.41 429.20 Q 1766.41 387.21 1731.74 387.21 Q 1697.56 387.21 1697.56 429.20 L 1697.56 704.10 L 1514.94 704.10 L 1514.94 432.62 Q 1514.94 337.40 1577.93 272.22 Q 1640.92 207.03 1732.23 207.03 Q 1836.72 207.03 1899.71 282.71 Q 1949.02 341.80 1949.02 447.27 L 1949.02 704.10 Z M 2243.07 37.60 L 2243.07 224.12 L 2325.10 224.12 L 2325.10 416.99 L 2243.07 416.99 Q 2243.07 475.10 2261.38 497.07 Q 2279.69 519.04 2328.52 519.04 L 2328.52 710.94 Q 2314.36 711.43 2307.52 711.43 Q 2245.51 711.43 2190.58 682.62 Q 2135.64 653.81 2102.44 604.49 Q 2060.45 541.50 2060.45 437.50 L 2060.45 37.60 L 2243.07 37.60 Z M 2622.56 217.29 L 2622.56 704.10 L 2439.94 704.10 L 2439.94 217.29 L 2622.56 217.29 Z M 2531.74 0.00 Q 2568.85 0.00 2595.95 26.12 Q 2623.05 52.25 2623.05 87.89 Q 2623.05 125.98 2597.41 150.39 Q 2571.78 174.80 2531.74 174.80 Q 2491.70 174.80 2466.06 150.39 Q 2440.43 125.98 2440.43 87.89 Q 2440.43 52.25 2467.53 26.12 Q 2494.63 0.00 2531.74 0.00 Z M 3189.06 704.10 L 3006.45 704.10 L 3006.45 429.20 Q 3006.45 387.21 2971.78 387.21 Q 2937.60 387.21 2937.60 429.20 L 2937.60 704.10 L 2754.98 704.10 L 2754.98 432.62 Q 2754.98 337.40 2817.97 272.22 Q 2880.96 207.03 2972.27 207.03 Q 3076.76 207.03 3139.75 282.71 Q 3189.06 341.80 3189.06 447.27 L 3189.06 704.10 Z M 3580.27 503.42 L 3580.27 670.90 Q 3540.72 685.55 3504.59 685.55 Q 3416.21 685.55 3354.93 618.65 Q 3293.65 551.76 3293.65 455.08 Q 3293.65 350.59 3367.38 278.81 Q 3441.11 207.03 3548.54 207.03 Q 3605.66 207.03 3657.91 229.98 Q 3710.16 252.93 3739.94 291.50 Q 3789.75 355.47 3789.75 477.05 L 3789.75 637.21 Q 3789.75 767.58 3715.77 848.88 Q 3641.80 930.18 3523.14 930.18 Q 3487.01 930.18 3431.84 912.11 L 3431.84 746.09 Q 3467.48 765.63 3504.10 765.63 Q 3553.42 765.63 3580.27 733.15 Q 3607.13 700.68 3607.13 640.14 L 3607.13 457.03 Q 3607.13 380.37 3545.12 380.37 Q 3518.75 380.37 3498.97 400.63 Q 3479.20 420.90 3479.20 447.27 Q 3479.20 475.10 3498.00 493.65 Q 3516.80 512.21 3544.63 512.21 Q 3563.18 512.21 3580.27 503.42 Z M 4661.52 378.42 L 4869.04 383.79 Q 4848.54 544.92 4757.47 632.81 Q 4666.41 720.70 4519.92 720.70 Q 4371.00 720.70 4270.65 620.85 Q 4170.31 521.00 4170.31 373.05 Q 4170.31 224.12 4272.61 122.56 Q 4374.90 21.00 4524.80 21.00 Q 4672.27 21.00 4770.90 120.61 Q 4839.26 189.45 4867.58 312.50 L 4655.18 326.66 Q 4619.53 217.29 4519.92 217.29 Q 4456.45 217.29 4415.19 261.23 Q 4373.93 305.18 4373.93 373.05 Q 4373.93 438.48 4414.45 481.20 Q 4454.98 523.93 4516.99 523.93 Q 4579.98 523.93 4617.33 486.33 Q 4654.69 448.73 4661.52 378.42 Z M 5156.74 37.60 L 5156.74 241.21 Q 5203.13 207.52 5249.51 207.52 Q 5319.82 207.52 5361.08 258.30 Q 5402.34 309.08 5402.34 395.51 L 5402.34 704.10 L 5219.73 704.10 L 5219.73 446.78 Q 5219.73 415.53 5213.13 404.79 Q 5206.54 394.04 5187.50 394.04 Q 5156.74 394.04 5156.74 439.45 L 5156.74 704.10 L 4974.12 704.10 L 4974.12 37.60 L 5156.74 37.60 Z M 5804.30 521.48 L 5804.30 710.45 Q 5781.84 714.36 5763.28 714.36 Q 5653.42 714.36 5580.18 642.09 Q 5506.93 569.82 5506.93 460.94 Q 5506.93 354.98 5580.91 281.25 Q 5654.88 207.52 5760.84 207.52 Q 5879.00 207.52 5947.12 276.61 Q 6015.23 345.70 6015.23 465.33 L 6015.23 704.10 L 5832.62 704.10 L 5832.62 478.52 Q 5832.62 439.94 5813.82 416.99 Q 5795.02 394.04 5763.28 394.04 Q 5734.47 394.04 5713.48 415.04 Q 5692.48 436.04 5692.48 464.84 Q 5692.48 495.12 5711.52 514.65 Q 5730.57 534.18 5759.86 534.18 Q 5783.79 534.18 5804.30 521.48 Z M 6329.30 217.29 L 6329.30 704.10 L 6146.68 704.10 L 6146.68 217.29 L 6329.30 217.29 Z M 6238.48 0.00 Q 6275.59 0.00 6302.69 26.12 Q 6329.79 52.25 6329.79 87.89 Q 6329.79 125.98 6304.15 150.39 Q 6278.52 174.80 6238.48 174.80 Q 6198.44 174.80 6172.80 150.39 Q 6147.17 125.98 6147.17 87.89 Q 6147.17 52.25 6174.27 26.12 Q 6201.37 0.00 6238.48 0.00 Z M 6728.81 212.40 L 6728.81 407.71 Q 6709.77 396.97 6694.14 396.97 Q 6644.34 396.97 6644.34 473.14 L 6644.34 704.10 L 6461.72 704.10 L 6461.72 437.99 Q 6461.72 332.52 6519.34 269.78 Q 6576.95 207.03 6673.14 207.03 Q 6694.63 207.03 6728.81 212.40 Z"/>
           </svg>
-        </div>
+      </a>
 
       <div class="space-x-6 lg:space-x-8 text-[13px] tracking-[0.2em] hidden md:flex font-medium text-stone-400">
         <a href="#hero" class="nav-link">首頁</a>
@@ -1740,9 +1752,9 @@
           <div class="spec-overlay">
             <h3 class="text-stone-400 text-[10px] tracking-widest mb-4 border-b pb-2 uppercase">2nd Gen Specs</h3>
             <div class="spec-row"><span class="spec-label">主要材質</span><span class="spec-val">杉木合板</span></div>
-            <div class="spec-row"><span class="spec-label">輔助結構</span><span class="spec-val">強化鋁合金結構件</span></div>
+            <div class="spec-row"><span class="spec-label">輔助結構</span><span class="spec-val">鋼製結構件</span></div>
             <div class="spec-row"><span class="spec-label">組裝方式</span><span class="spec-val">易拆卸優化結構</span></div>
-            <div class="spec-row"><span class="spec-label">作品尺寸</span><span class="spec-val"><em class="cmp-pending">確認中</em></span></div>
+            <div class="spec-row"><span class="spec-label">作品尺寸</span><span class="spec-val">1035×1325 mm</span></div>
           </div>
         </div>
 
@@ -1805,7 +1817,7 @@
           <div class="cmp-row is-diff">
             <span class="cmp-cell cmp-item">輔助結構</span>
             <span class="cmp-cell">鋁合金接件</span>
-            <span class="cmp-cell">強化鋁合金結構件</span>
+            <span class="cmp-cell">鋼製結構件</span>
           </div>
           <div class="cmp-row is-diff">
             <span class="cmp-cell cmp-item">組裝方式</span>
@@ -1816,7 +1828,7 @@
           <div class="cmp-row is-diff">
             <span class="cmp-cell cmp-item">作品尺寸</span>
             <span class="cmp-cell">1300×1030 mm</span>
-            <span class="cmp-cell"><em class="cmp-pending">確認中</em></span>
+            <span class="cmp-cell">1035×1325 mm</span>
           </div>
           <div class="cmp-row is-diff">
             <span class="cmp-cell cmp-item">總重量</span>
@@ -2266,6 +2278,23 @@
       // Buttons（不再夾在 0..N-1，因為兩端有複製張可以繼續走）
       prev?.addEventListener('click', () => goTo(cell - 1));
       next?.addEventListener('click', () => goTo(cell + 1));
+
+      // 點露邊的那張就切過去。手機沒有左右箭頭，原本只能點下方圓點。
+      // 用 pointerdown → pointerup 的位移量區分「輕點」與「滑動」：
+      // 滑動結束時瀏覽器仍會補一個 click，若不濾掉會在滑到一半時又被拉走。
+      let tapX = 0, tapY = 0, tapCell = -1;
+      viewport.addEventListener('pointerdown', (e) => {
+        tapX = e.clientX; tapY = e.clientY;
+        const s = e.target.closest?.('.hero-slide');
+        tapCell = s ? cells.indexOf(s) : -1;
+      }, { passive: true });
+      viewport.addEventListener('pointerup', (e) => {
+        if (tapCell < 0 || tapCell === cell) return;             // 沒點到、或點的就是當前張
+        if (Math.hypot(e.clientX - tapX, e.clientY - tapY) > 10) return;  // 位移過大＝滑動，不是輕點
+        const s = e.target.closest?.('.hero-slide');
+        if (!s || cells.indexOf(s) !== tapCell) return;          // 按下與放開不在同一張
+        goTo(tapCell);
+      }, { passive: true });
 
       // Dots
       dots.forEach(d => {
